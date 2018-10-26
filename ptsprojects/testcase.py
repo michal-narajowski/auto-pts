@@ -700,6 +700,8 @@ class TestCase(PTSCallback):
                                                stdout=self.lf_subproc,
                                                stderr=self.lf_subproc)
 
+            time.sleep(3)
+
         # start commands that don't have start trigger (lack start_wid or
         # post_wid) and are not cleanup functions
         for cmd in self.cmds:
