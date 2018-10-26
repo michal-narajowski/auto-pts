@@ -24,27 +24,19 @@ import signal
 PROFILE = None
 TEST_CASE = None
 
-BTMON_PROC = None
-BTMON_LOG = None
-# XXX: Fill me - btmon path example: /home/user/bluez/monitor/btmon
-BTMON_PATH = None
-
-# XXX: Fill me - logs dir example: /home/user/btmon_logs/
-LOGS_DIR = None
+RTT2PTY_PROC = None
+RTT2PTY_PATH = "rtt2pty"
 
 def cleanup():
-    if BTMON_PROC != None:
-        BTMON_PROC.terminate()
+    if RTT2PTY_PROC != None:
+        RTT2PTY_PROC.terminate()
 
-        BTMON_PROC.wait()
+        RTT2PTY_PROC.wait()
 
-def run_btmon():
-    global BTMON_PROC, TEST_CASE
+def run_rtt2pty():
+    global RTT2PTY_PROC
 
-    TEST_CASE = TEST_CASE.replace("/", "-")
-
-    BTMON_PROC = subprocess.Popen([BTMON_PATH, "-w", LOGS_DIR + PROFILE + "/" +
-                                  TEST_CASE], shell=False)
+    RTT2PTY_PROC = subprocess.Popen([RTT2PTY_PATH, "-2"], shell=False)
 
 def main():
     global PROFILE, TEST_CASE
@@ -54,17 +46,16 @@ def main():
     PROFILE = sys.argv[1]
     TEST_CASE = sys.argv[2]
 
-    if os.path.exists(LOGS_DIR + PROFILE) == False:
-        os.makedirs(LOGS_DIR + PROFILE)
+    print("#DBG# " + TEST_CASE)
 
-    run_btmon()
+    run_rtt2pty()
 
     while True:
         line = sys.stdin.readline()
 
         if line == "#close\n":
-            BTMON_PROC.terminate()
-            BTMON_PROC.wait()
+            RTT2PTY_PROC.terminate()
+            RTT2PTY_PROC.wait()
 
             break
 
