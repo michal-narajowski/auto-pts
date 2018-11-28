@@ -39,13 +39,13 @@ def check_args(args):
     if not ip_addr:
         sys.exit("Server IP address not specified!")
 
-    if tty_file:
-        if (not tty_file.startswith("/dev/tty") and
-            not tty_file.startswith("/dev/pts")):
-            sys.exit("%s is not a TTY file!" % repr(tty_file))
+    #if tty_file:
+        #if (not tty_file.startswith("/dev/tty") and
+            #not tty_file.startswith("/dev/pts")):
+            #sys.exit("%s is not a TTY file!" % repr(tty_file))
         #if not os.path.exists(tty_file):
         #    sys.exit("%s TTY file does not exist!" % repr(tty_file))
-    else: # no TTY - will run DUT in QEMU
+    if not tty_file: # no TTY - will run DUT in QEMU
         if not find_executable(qemu_bin):
             sys.exit("%s is needed but not found!" % (qemu_bin,))
 
