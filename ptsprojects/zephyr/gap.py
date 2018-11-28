@@ -183,7 +183,8 @@ def test_cases(pts):
                    TestFunc(btp.gap_adv_ind_on, start_wid=5)]),
         ZTestCase("GAP", "GAP/DISC/NONM/BV-02-C",
                   pre_conditions +
-                  [TestFunc(btp.gap_set_nondiscov, start_wid=72),
+                  [TestFunc(btp.gap_set_conn, start_wid=72),
+                   TestFunc(btp.gap_set_nondiscov, start_wid=72),
                    TestFunc(btp.gap_adv_ind_on, sd=[AdData.ad_name_sh],
                             start_wid=72)]),
         ZTestCase("GAP", "GAP/DISC/LIMM/BV-03-C",
@@ -300,25 +301,30 @@ def test_cases(pts):
                             start_wid=55)]),
         ZTestCase("GAP", "GAP/CONN/UCON/BV-01-C",
                   pre_conditions +
-                  [TestFunc(btp.gap_set_nondiscov, start_wid=74),
+                  [TestFunc(btp.gap_set_conn, start_wid=74),
+                   TestFunc(btp.gap_set_nondiscov, start_wid=74),
                    TestFunc(btp.gap_adv_ind_on, sd=[AdData.ad_name_sh],
                             start_wid=74)]),
         ZTestCase("GAP", "GAP/CONN/UCON/BV-02-C",
                   pre_conditions +
-                  [TestFunc(btp.gap_set_gendiscov, start_wid=75),
+                  [TestFunc(btp.gap_set_conn, start_wid=75),
+                   TestFunc(btp.gap_set_gendiscov, start_wid=75),
                    TestFunc(btp.gap_adv_ind_on, sd=[AdData.ad_name_sh],
                             start_wid=75)]),
         ZTestCase("GAP", "GAP/CONN/UCON/BV-03-C",
                   pre_conditions +
-                  [TestFunc(btp.gap_set_limdiscov, start_wid=76),
-                   TestFunc(btp.gap_adv_ind_on, sd=[AdData.ad_name_sh],
+                  [TestFunc(btp.gap_set_conn, start_wid=76),
+                   TestFunc(btp.gap_set_limdiscov, start_wid=76),
+                   TestFunc(btp.gap_adv_ind_on, ad=[AdData.ad_name_sh],
                             start_wid=76)]),
         ZTestCase("GAP", "GAP/CONN/UCON/BV-06-C",
                   edit1_wids={1002: btp.var_store_get_passkey},
                   cmds=pre_conditions +
                        [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
+                        TestFunc(btp.gap_set_conn, start_wid=91),
                         TestFunc(btp.gap_set_gendiscov, start_wid=91),
-                        TestFunc(btp.gap_adv_ind_on, start_wid=91),
+                        TestFunc(btp.gap_adv_ind_on, ad=[AdData.ad_name_sh], 
+                                 start_wid=91),
                         TestFunc(btp.gap_wait_for_connection, start_wid=91),
                         TestFunc(btp.gap_disconn, start_wid=77),
 
@@ -376,14 +382,17 @@ def test_cases(pts):
                   generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/CONN/CPUP/BV-01-C",
                   pre_conditions +
-                  [TestFunc(btp.gap_adv_ind_on, sd=[AdData.ad_name_sh],
+                  [TestFunc(btp.gap_set_conn, start_wid=21),
+                   TestFunc(btp.gap_adv_ind_on, sd=[AdData.ad_name_sh],
                             start_wid=21)]),
         ZTestCase("GAP", "GAP/CONN/CPUP/BV-02-C",
                   pre_conditions +
-                  [TestFunc(btp.gap_adv_ind_on, sd=[AdData.ad_name_sh])]),
+                  [TestFunc(btp.gap_set_conn, start_wid=21),
+                   TestFunc(btp.gap_adv_ind_on, sd=[AdData.ad_name_sh])]),
         ZTestCase("GAP", "GAP/CONN/CPUP/BV-03-C",
                   pre_conditions +
-                  [TestFunc(btp.gap_adv_ind_on, sd=[AdData.ad_name_sh])]),
+                  [TestFunc(btp.gap_set_conn, start_wid=21),
+                   TestFunc(btp.gap_adv_ind_on, sd=[AdData.ad_name_sh])]),
         ZTestCase("GAP", "GAP/CONN/CPUP/BV-04-C",
                   pre_conditions +
                   [TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
@@ -440,13 +449,15 @@ def test_cases(pts):
                    pre_conditions +
                    [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
                     TestFunc(btp.gap_set_conn, start_wid=91),
+                    TestFunc(btp.gap_set_gendiscov, start_wid=91),
                     TestFunc(btp.gap_adv_ind_on, sd=[AdData.ad_name_sh],
                              start_wid=91),]),
          ZTestCase("GAP", "GAP/BOND/BON/BV-01-C",
                    edit1_wids={1002: btp.var_store_get_passkey},
                    cmds=pre_conditions +
                         [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
-                         TestFunc(btp.gap_set_conn),
+                         TestFunc(btp.gap_set_conn, start_wid=91),
+                         TestFunc(btp.gap_set_gendiscov, start_wid=91),
                          TestFunc(btp.gap_adv_ind_on, sd=[AdData.ad_name_sh],
                                   start_wid=91),
                          TestFunc(btp.gap_pair, pts_bd_addr, Addr.le_public,
@@ -479,6 +490,7 @@ def test_cases(pts):
                                1002: btp.var_store_get_passkey},
                    cmds=pre_conditions + init_gatt_db +
                         [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
+                         TestFunc(btp.gap_set_gendiscov, start_wid=91),
                          TestFunc(btp.gap_set_conn, start_wid=91),
                          TestFunc(btp.gap_adv_ind_on, sd=[AdData.ad_name_sh],
                                   start_wid=91)]),
@@ -740,12 +752,12 @@ def test_cases(pts):
                        [TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
                                  start_wid=78)]),
         # Testing peripheral role.
-        ZTestCase("GAP", "GAP/GAT/BV-01-C",
-                  no_wid=158,
-                  cmds=pre_conditions + init_gatt_db +
-                       [TestFunc(btp.gap_set_conn, start_wid=9),
-                        TestFunc(btp.gap_adv_ind_on, sd=[AdData.ad_name_sh],
-                                 start_wid=9)]),
+        #ZTestCase("GAP", "GAP/GAT/BV-01-C",
+                  #no_wid=158,
+                  #cmds=pre_conditions + init_gatt_db +
+                       #[TestFunc(btp.gap_set_conn, start_wid=9),
+                        #TestFunc(btp.gap_adv_ind_on, sd=[AdData.ad_name_sh],
+                                 #start_wid=9)]),
     ]
 
     return test_cases
