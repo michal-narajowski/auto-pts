@@ -35,8 +35,7 @@ def cleanup():
 
 def run_rtt2pty():
     global RTT2PTY_PROC
-
-    RTT2PTY_PROC = subprocess.Popen([RTT2PTY_PATH, "-2"], shell=False)
+    RTT2PTY_PROC = subprocess.Popen([RTT2PTY_PATH, "-2", "-l", "auto-pts-tester"], shell=False)
 
 def main():
     global PROFILE, TEST_CASE
