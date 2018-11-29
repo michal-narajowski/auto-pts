@@ -54,107 +54,70 @@ def _validate_pair(ob):
     return True
 
 
-def source_zephyr_env(zephyr_wd):
-    """Sets the project environment variables
-    :param zephyr_wd: Zephyr source path
-    :return: environment variables set
-    """
-    logging.debug("{}: {}".format(source_zephyr_env.__name__, zephyr_wd))
-
-    cmd = ['source', './zephyr-env.sh', '&&', 'env']
-    cmd = subprocess.list2cmdline(cmd)
-
-    p = subprocess.Popen(cmd, cwd=zephyr_wd, shell=True,
-                         stdout=subprocess.PIPE)
-
-    lines = p.stdout.readlines()
-    pairs = map(lambda l: l.decode('UTF-8').rstrip().split('=', 1), lines)
-    valid_pairs = filter(_validate_pair, pairs)
-    env = dict(valid_pairs)
-    p.communicate()
-
-    # Those are not properly parsed, remove them, we don't need them
-    env.pop('BASH_FUNC_module%%', None)
-    env.pop('BASH_FUNC_scl%%', None)
-
-    return env
-
-
-def build_and_flash(zephyr_wd, board, conf_file=None):
-    """Build and flash Zephyr binary
-    :param zephyr_wd: Zephyr source path
+def build_and_flash(project_path, board, conf_file=None):
+    """Build and flash Mynewt binary
+    :param project_path: Mynewt source path
     :param board: IUT
     :param conf_file: configuration file to be used
     :return: None
     """
-    logging.debug("{}: {} {} {}". format(build_and_flash.__name__, zephyr_wd,
+    logging.debug("{}: {} {} {}". format(build_and_flash.__name__, project_path,
                                          board, conf_file))
-    tester_outdir = os.path.join(zephyr_wd, "tests", "bluetooth", "tester",
-                                 "outdir")
 
-    if os.path.isdir(tester_outdir):
-        check_call(['rm', '-rf', tester_outdir], cwd=zephyr_wd)
+    check_call('newt clean nrf52pdk_boot'.split(), cwd=project_path)
+    check_call('newt clean bttester'.split(), cwd=project_path)
+    check_call('newt build nrf52pdk_boot'.split(), cwd=project_path)
+    check_call('newt build bttester'.split(), cwd=project_path)
 
-    os.makedirs(tester_outdir)
+    check_call('newt create-image nrf52pdk_boot 0.0.0'.split(), cwd=project_path)
+    check_call('newt create-image bttester 0.0.0'.split(), cwd=project_path)
 
-    # Set Zephyr project env variables
-    env = source_zephyr_env(zephyr_wd)
-
-    cmd = ['cmake', '-GNinja', '-DBOARD={}'.format(board)]
-    if conf_file:
-        cmd.append('-DCONF_FILE={}'.format(conf_file))
-    cmd.append('..')
-
-    check_call(cmd, env=env, cwd=tester_outdir)
-    check_call(['ninja'], env=env, cwd=tester_outdir)
-    check_call(['nrfjprog', '--eraseall', '-f', 'nrf52'])
-    check_call(['nrfjprog', '--program', 'zephyr/zephyr.hex', '-f', 'nrf52'],
-               cwd=tester_outdir)
-    check_call(['nrfjprog', '-p'])
+    check_call('newt load nrf52pdk_boot'.split(), cwd=project_path)
+    check_call('newt load bttester'.split(), cwd=project_path)
 
 
-def flush_serial(tty):
-    """Clear the serial port buffer
-    :param tty: file path of the terminal
-    :return: None
-    """
-    if not tty:
-        return
+# def flush_serial(tty):
+#     """Clear the serial port buffer
+#     :param tty: file path of the terminal
+#     :return: None
+#     """
+#     if not tty:
+#         return
+#
+#     check_call(['while', 'read', '-t', '0', 'var', '<', tty, ';', 'do',
+#                 'continue;', 'done'])
 
-    check_call(['while', 'read', '-t', '0', 'var', '<', tty, ';', 'do',
-                'continue;', 'done'])
 
-
-def apply_overlay(zephyr_wd, base_conf, cfg_name, overlay):
-    """Duplicates default_conf configuration file and applies overlay changes
-    to it.
-    :param zephyr_wd: Zephyr source path
-    :param base_conf: base configuration file
-    :param cfg_name: new configuration file name
-    :param overlay: defines changes to be applied
-    :return: None
-    """
-    tester_app_dir = os.path.join(zephyr_wd, "tests", "bluetooth", "tester")
-    cwd = os.getcwd()
-
-    os.chdir(tester_app_dir)
-
-    with open(base_conf, 'r') as base:
-        with open(cfg_name, 'w') as config:
-            for line in base.readlines():
-                re_config = re.compile('(?P<config_key>\w+)=(?P<config_value>\w+)*')
-                match = re_config.match(line)
-                if match and match.group('config_key') in overlay:
-                    v = overlay.pop(match.group('config_key'))
-                    config.write("{}={}\n".format(match.group('config_key'), v))
-                else:
-                    config.write(line)
-
-            # apply what's left
-            for k, v in overlay.items():
-                config.write("{}={}\n".format(k, v))
-
-    os.chdir(cwd)
+# def apply_overlay(zephyr_wd, base_conf, cfg_name, overlay):
+#     """Duplicates default_conf configuration file and applies overlay changes
+#     to it.
+#     :param zephyr_wd: Mynewt source path
+#     :param base_conf: base configuration file
+#     :param cfg_name: new configuration file name
+#     :param overlay: defines changes to be applied
+#     :return: None
+#     """
+#     tester_app_dir = os.path.join(zephyr_wd, "tests", "bluetooth", "tester")
+#     cwd = os.getcwd()
+#
+#     os.chdir(tester_app_dir)
+#
+#     with open(base_conf, 'r') as base:
+#         with open(cfg_name, 'w') as config:
+#             for line in base.readlines():
+#                 re_config = re.compile('(?P<config_key>\w+)=(?P<config_value>\w+)*')
+#                 match = re_config.match(line)
+#                 if match and match.group('config_key') in overlay:
+#                     v = overlay.pop(match.group('config_key'))
+#                     config.write("{}={}\n".format(match.group('config_key'), v))
+#                 else:
+#                     config.write(line)
+#
+#             # apply what's left
+#             for k, v in overlay.items():
+#                 config.write("{}={}\n".format(k, v))
+#
+#     os.chdir(cwd)
 
 
 autopts2board = {
@@ -163,31 +126,31 @@ autopts2board = {
 }
 
 
-def get_tty_path(name):
-    """Returns tty path (eg. /dev/ttyUSB0) of serial device with specified name
-    :param name: device name
-    :return: tty path if device found, otherwise None
-    """
-    serial_devices = {}
-    ls = subprocess.Popen(["ls", "-l", "/dev/serial/by-id"],
-                          stdout=subprocess.PIPE)
-
-    awk = subprocess.Popen("awk '{if (NF > 5) print $(NF-2), $NF}'",
-                           stdin=ls.stdout,
-                           stdout=subprocess.PIPE,
-                           shell=True)
-
-    end_of_pipe = awk.stdout
-    for line in end_of_pipe:
-        device, serial = line.decode().rstrip().split(" ")
-        serial_devices[device] = serial
-
-    for device, serial in serial_devices.items():
-        if name in device:
-            tty = os.path.basename(serial)
-            return "/dev/{}".format(tty)
-
-    return None
+# def get_tty_path(name):
+#     """Returns tty path (eg. /dev/ttyUSB0) of serial device with specified name
+#     :param name: device name
+#     :return: tty path if device found, otherwise None
+#     """
+#     serial_devices = {}
+#     ls = subprocess.Popen(["ls", "-l", "/dev/serial/by-id"],
+#                           stdout=subprocess.PIPE)
+#
+#     awk = subprocess.Popen("awk '{if (NF > 5) print $(NF-2), $NF}'",
+#                            stdin=ls.stdout,
+#                            stdout=subprocess.PIPE,
+#                            shell=True)
+#
+#     end_of_pipe = awk.stdout
+#     for line in end_of_pipe:
+#         device, serial = line.decode().rstrip().split(" ")
+#         serial_devices[device] = serial
+#
+#     for device, serial in serial_devices.items():
+#         if name in device:
+#             tty = os.path.basename(serial)
+#             return "/dev/{}".format(tty)
+#
+#     return None
 
 
 def get_test_cases(ptses):
@@ -217,14 +180,16 @@ def run_tests(args, iut_config):
     status = {}
     descriptions = {}
 
-    tty = get_tty_path("J-Link")
+    tty = './auto-pts-tester'
     callback_thread = autoptsclient.init_core()
+    # test_db_name = "zephyr_" + str(args["board"])
+    test_db_name = None
 
     ptses = []
     for ip in args["server_ip"]:
         ptses.append(autoptsclient.init_pts(ip, args["workspace"],
                      args["bd_addr"], args["enable_max_logs"], callback_thread,
-                     "zephyr_" + str(args["board"])))
+                     test_db_name, args.get("local_ip", None)))
 
     btp.init(get_iut)
     # Main instance of PTS
@@ -247,8 +212,8 @@ def run_tests(args, iut_config):
 
     for config, value in iut_config.items():
         if 'overlay' in value:
-            apply_overlay(args["project_path"], default_conf, config,
-                          value['overlay'])
+            # apply_overlay(args["project_path"], default_conf, config,
+            #               value['overlay'])
             to_run = value['test_cases']
             to_omit = None
         elif 'test_cases' not in value:  # DEFAULT CASE
@@ -259,7 +224,7 @@ def run_tests(args, iut_config):
 
         build_and_flash(args["project_path"], autopts2board[args["board"]],
                         config)
-        flush_serial(tty)
+        # flush_serial(tty)
         time.sleep(10)
 
         autoprojects.iutctl.init(args["kernel_image"], tty, args["board"])
@@ -294,14 +259,18 @@ def run_tests(args, iut_config):
 
 
 def main(cfg):
-    args = cfg['auto_pts']
-    args['kernel_image'] = os.path.join(args['project_path'], 'tests',
-                                        'bluetooth', 'tester', 'outdir',
-                                        'zephyr', 'zephyr.elf')
+    print("Mynewt bot start!")
 
-    zephyr_hash = \
-        bot.common.update_sources(os.path.abspath(args['project_path']),
-                                  'upstream')
+    args = cfg['auto_pts']
+    args['kernel_image'] = os.path.join(args['project_path'], 'bin',
+                                        'targets', 'bttester', 'app', 'apps',
+                                        'bttester', 'bttester.elf')
+
+    # zephyr_hash = \
+    #     bot.common.update_sources(os.path.abspath(args['project_path']),
+    #                               'origin')
+
+    zephyr_hash = 'hash'
 
     summary, results, descriptions, regressions = \
         run_tests(args, cfg.get('iut_config', {}))
