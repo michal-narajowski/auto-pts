@@ -295,7 +295,7 @@ def main(cfg):
         url = drive.new_workdir(args['board'])
         drive.upload(report_file)
         drive.upload(logs_file)
-        drive.upload("TestCase.db")
+        # drive.upload("TestCase.db")
 
     if 'mail' in cfg:
         summary_html = bot.common.status_dict2summary_html(summary)
