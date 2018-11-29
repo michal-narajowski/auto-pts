@@ -64,15 +64,26 @@ def build_and_flash(project_path, board, conf_file=None):
     logging.debug("{}: {} {} {}". format(build_and_flash.__name__, project_path,
                                          board, conf_file))
 
-    check_call('newt clean nrf52pdk_boot'.split(), cwd=project_path)
-    check_call('newt clean bttester'.split(), cwd=project_path)
-    check_call('newt build nrf52pdk_boot'.split(), cwd=project_path)
+    check_call('rm -rf bin/'.split(), cwd=project_path)
+    check_call('rm -rf targets/{}_boot/'.format(board).split(), cwd=project_path)
+    check_call('rm -rf targets/bttester/'.split(), cwd=project_path)
+
+    check_call('newt target create {}_boot'.format(board).split(), cwd=project_path)
+    check_call('newt target create bttester'.split(), cwd=project_path)
+
+    check_call('newt target set {}_boot bsp=@apache-mynewt-core/hw/bsp/{}'.format(board, board).split(), cwd=project_path)
+    check_call('newt target set {}_boot app=@apache-mynewt-core/apps/boot'.format(board).split(), cwd=project_path)
+
+    check_call('newt target set bttester bsp=@apache-mynewt-core/hw/bsp/{}'.format(board).split(), cwd=project_path)
+    check_call('newt target set bttester app=@apache-mynewt-nimble/apps/bttester'.split(), cwd=project_path)
+
+    check_call('newt build {}_boot'.format(board).split(), cwd=project_path)
     check_call('newt build bttester'.split(), cwd=project_path)
 
-    check_call('newt create-image nrf52pdk_boot 0.0.0'.split(), cwd=project_path)
+    check_call('newt create-image {}_boot 0.0.0'.format(board).split(), cwd=project_path)
     check_call('newt create-image bttester 0.0.0'.split(), cwd=project_path)
 
-    check_call('newt load nrf52pdk_boot'.split(), cwd=project_path)
+    check_call('newt load {}_boot'.format(board).split(), cwd=project_path)
     check_call('newt load bttester'.split(), cwd=project_path)
 
 
@@ -122,7 +133,7 @@ def build_and_flash(project_path, board, conf_file=None):
 
 autopts2board = {
     None: None,
-    'nrf52': 'nrf52840_pca10056'
+    'nrf52': 'nordic_pca10056'
 }
 
 
