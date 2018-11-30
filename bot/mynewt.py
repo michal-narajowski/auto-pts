@@ -141,30 +141,26 @@ def run_tests(args, iut_config):
                           callback_thread.clear_pending_responses)
     cache = autoptsclient.cache_workspace(pts)
 
-    default_conf = None
     default_to_omit = []
 
     for config, value in iut_config.items():
+        if 'overlay' not in value:
+            continue
         for test_case in value.get('test_cases', []):
             default_to_omit.append(test_case)
-        if 'test_cases' not in value:
-            default_conf = config
 
     for config, value in iut_config.items():
         if 'overlay' in value:
-            # apply_overlay(args["project_path"], default_conf, config,
-            #               value['overlay'])
-            to_run = value['test_cases']
-            to_omit = None
-        elif 'test_cases' not in value:  # DEFAULT CASE
-            to_run = None
-            to_omit = default_to_omit
-        else:
+            # TODO:
             continue
+            # to_run = value['test_cases']
+            # to_omit = None
+        else:
+            to_run = value['test_cases']
+            to_omit = default_to_omit
 
-        build_and_flash(args["project_path"], autopts2board[args["board"]],
-                        config)
-        # flush_serial(tty)
+        # build_and_flash(args["project_path"], autopts2board[args["board"]],
+        #                 config)
         time.sleep(10)
 
         autoprojects.iutctl.init(args["kernel_image"], tty, args["board"])
