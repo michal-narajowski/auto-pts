@@ -87,81 +87,10 @@ def build_and_flash(project_path, board, conf_file=None):
     check_call('newt load bttester'.split(), cwd=project_path)
 
 
-# def flush_serial(tty):
-#     """Clear the serial port buffer
-#     :param tty: file path of the terminal
-#     :return: None
-#     """
-#     if not tty:
-#         return
-#
-#     check_call(['while', 'read', '-t', '0', 'var', '<', tty, ';', 'do',
-#                 'continue;', 'done'])
-
-
-# def apply_overlay(zephyr_wd, base_conf, cfg_name, overlay):
-#     """Duplicates default_conf configuration file and applies overlay changes
-#     to it.
-#     :param zephyr_wd: Mynewt source path
-#     :param base_conf: base configuration file
-#     :param cfg_name: new configuration file name
-#     :param overlay: defines changes to be applied
-#     :return: None
-#     """
-#     tester_app_dir = os.path.join(zephyr_wd, "tests", "bluetooth", "tester")
-#     cwd = os.getcwd()
-#
-#     os.chdir(tester_app_dir)
-#
-#     with open(base_conf, 'r') as base:
-#         with open(cfg_name, 'w') as config:
-#             for line in base.readlines():
-#                 re_config = re.compile('(?P<config_key>\w+)=(?P<config_value>\w+)*')
-#                 match = re_config.match(line)
-#                 if match and match.group('config_key') in overlay:
-#                     v = overlay.pop(match.group('config_key'))
-#                     config.write("{}={}\n".format(match.group('config_key'), v))
-#                 else:
-#                     config.write(line)
-#
-#             # apply what's left
-#             for k, v in overlay.items():
-#                 config.write("{}={}\n".format(k, v))
-#
-#     os.chdir(cwd)
-
-
 autopts2board = {
     None: None,
     'nrf52': 'nordic_pca10056'
 }
-
-
-# def get_tty_path(name):
-#     """Returns tty path (eg. /dev/ttyUSB0) of serial device with specified name
-#     :param name: device name
-#     :return: tty path if device found, otherwise None
-#     """
-#     serial_devices = {}
-#     ls = subprocess.Popen(["ls", "-l", "/dev/serial/by-id"],
-#                           stdout=subprocess.PIPE)
-#
-#     awk = subprocess.Popen("awk '{if (NF > 5) print $(NF-2), $NF}'",
-#                            stdin=ls.stdout,
-#                            stdout=subprocess.PIPE,
-#                            shell=True)
-#
-#     end_of_pipe = awk.stdout
-#     for line in end_of_pipe:
-#         device, serial = line.decode().rstrip().split(" ")
-#         serial_devices[device] = serial
-#
-#     for device, serial in serial_devices.items():
-#         if name in device:
-#             tty = os.path.basename(serial)
-#             return "/dev/{}".format(tty)
-#
-#     return None
 
 
 def get_test_cases(ptses):
