@@ -118,6 +118,9 @@ def test_cases(pts):
                              "GAP", "TSPX_bd_addr_iut",
                              stack.gap.iut_addr_get_str())),
                     TestFunc(lambda: pts.update_pixit_param(
+                        "GAP", "TSPX_iut_device_IRK_for_resolvable_privacy_address_generation_procedure",
+                        "11111111111111111111111111111111")),
+                    TestFunc(lambda: pts.update_pixit_param(
                              "GAP", "TSPX_iut_privacy_enabled",
                              "TRUE" if stack.gap.iut_has_privacy() else "FALSE")),
                     TestFunc(lambda: pts.update_pixit_param(
