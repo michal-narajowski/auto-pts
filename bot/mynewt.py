@@ -139,7 +139,7 @@ def run_tests(args, iut_config):
     stack_inst = stack.get_stack()
     stack_inst.synch_init(callback_thread.set_pending_response,
                           callback_thread.clear_pending_responses)
-    cache = autoptsclient.cache_workspace(pts)
+    # cache = autoptsclient.cache_workspace(pts)
 
     default_to_omit = []
 
@@ -183,11 +183,11 @@ def run_tests(args, iut_config):
         results.update(results_dict)
         autoprojects.iutctl.cleanup()
 
-    for test_case_name in results.keys():
-        descriptions[test_case_name] = \
-            autoptsclient.get_test_case_description(cache, test_case_name)
-
-    autoptsclient.cache_cleanup(cache)
+    # for test_case_name in results.keys():
+    #     descriptions[test_case_name] = \
+    #         autoptsclient.get_test_case_description(cache, test_case_name)
+    #
+    # autoptsclient.cache_cleanup(cache)
 
     pts.unregister_xmlrpc_ptscallback()
 
@@ -215,26 +215,26 @@ def main(cfg):
                                               descriptions)
     logs_file = bot.common.archive_recursive("logs")
 
-    if 'gdrive' in cfg:
-        drive = bot.common.Drive(cfg['gdrive'])
-        url = drive.new_workdir(args['board'])
-        drive.upload(report_file)
-        drive.upload(logs_file)
-        # drive.upload("TestCase.db")
-
-    if 'mail' in cfg:
-        summary_html = bot.common.status_dict2summary_html(summary)
-        url_html = bot.common.url2html(url, "Results on Google Drive")
-
-        # Provide test case description
-        _regressions = []
-        for name in regressions:
-            _regressions.append(
-                name + " - " + descriptions.get(name, "no description"))
-
-        reg_html = bot.common.regressions2html(_regressions)
-        bot.common.send_mail(cfg['mail'], None, zephyr_hash, args["board"],
-                             [summary_html, reg_html, url_html])
+    # if 'gdrive' in cfg:
+    #     drive = bot.common.Drive(cfg['gdrive'])
+    #     url = drive.new_workdir(args['board'])
+    #     drive.upload(report_file)
+    #     drive.upload(logs_file)
+    #     # drive.upload("TestCase.db")
+    #
+    # if 'mail' in cfg:
+    #     summary_html = bot.common.status_dict2summary_html(summary)
+    #     url_html = bot.common.url2html(url, "Results on Google Drive")
+    #
+    #     # Provide test case description
+    #     _regressions = []
+    #     for name in regressions:
+    #         _regressions.append(
+    #             name + " - " + descriptions.get(name, "no description"))
+    #
+    #     reg_html = bot.common.regressions2html(_regressions)
+    #     bot.common.send_mail(cfg['mail'], None, zephyr_hash, args["board"],
+    #                          [summary_html, reg_html, url_html])
 
     bot.common.cleanup()
 
