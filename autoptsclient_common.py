@@ -409,7 +409,7 @@ def init_pts(server_address, workspace_path, bd_addr, enable_max_logs,
 
     print "Starting PTS %s ..." % server_address,
     sys.stdout.flush()
-    proxy.restart_pts()
+    # proxy.restart_pts()
     print "OK"
 
     proxy.callback_thread = callback_thread
