@@ -18,7 +18,7 @@
 try:
     from ptsprojects.testcase import TestCase, TestCmd, TestFunc, \
         TestFuncCleanUp, MMI
-    from ptsprojects.zephyr.ztestcase import ZTestCase
+    from ptsprojects.mynewt.ztestcase import ZTestCase
 
 except ImportError:  # running this module as script
     import sys
@@ -26,14 +26,14 @@ except ImportError:  # running this module as script
 
     from ptsprojects.testcase import TestCase, TestCmd, TestFunc, \
         TestFuncCleanUp, MMI
-    from ptsprojects.zephyr.ztestcase import ZTestCase
+    from ptsprojects.mynewt.ztestcase import ZTestCase
 
 from pybtp import btp
 from pybtp.types import UUID, Addr, IOCap, Prop, Perm
 from time import sleep
 import logging
 from ptsprojects.stack import get_stack
-from ptsprojects.zephyr.gatt_wid import gatt_wid_hdl
+from ptsprojects.mynewt.gatt_wid import gatt_wid_hdl
 
 
 class Value:
@@ -1566,7 +1566,7 @@ def test_cases(pts):
 
 def main():
     """Main."""
-    import ptsprojects.zephyr.iutctl as iutctl
+    import ptsprojects.mynewt.iutctl as iutctl
 
     iutctl.init_stub()
 

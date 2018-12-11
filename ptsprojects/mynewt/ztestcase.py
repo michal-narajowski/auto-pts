@@ -13,39 +13,40 @@
 # more details.
 #
 
-"""Test case that manages Zephyr IUT"""
+"""Test case that manages Mynewt IUT"""
 
 from ptsprojects.testcase import TestCase, TestFunc, \
     TestFuncCleanUp
 from ptsprojects.stack import get_stack
-from ptsprojects.zephyr.iutctl import get_iut
+from ptsprojects.mynewt.iutctl import get_iut
 
 
 class ZTestCase(TestCase):
-    """A Zephyr test case that uses QEMU or HW as DUT"""
+    """A Mynewt test case that uses QEMU or HW as DUT"""
 
     def __init__(self, *args, **kwargs):
         """Refer to TestCase.__init__ for parameters and their documentation"""
 
-        super(ZTestCase, self).__init__(*args, ptsproject_name = "zephyr",**kwargs)
+        super(ZTestCase, self).__init__(*args, ptsproject_name="mynewt",
+                                        **kwargs)
 
         self.stack = get_stack()
-        self.zephyrctl = get_iut()
+        self.mynewtctl = get_iut()
 
         # first command is to start QEMU or HW
-        self.cmds.insert(0, TestFunc(self.zephyrctl.start))
-        self.cmds.insert(1, TestFunc(self.zephyrctl.wait_iut_ready_event))
+        self.cmds.insert(0, TestFunc(self.mynewtctl.start))
+        self.cmds.insert(1, TestFunc(self.mynewtctl.wait_iut_ready_event))
 
         self.cmds.append(TestFuncCleanUp(self.stack.cleanup))
         # last command is to stop QEMU or HW
-        self.cmds.append(TestFuncCleanUp(self.zephyrctl.stop))
+        self.cmds.append(TestFuncCleanUp(self.mynewtctl.stop))
 
 
 class ZTestCaseSlave(TestCase):
-    """A Zephyr helper test case that uses QEMU or HW as DUT"""
+    """A Mynewt helper test case that uses QEMU or HW as DUT"""
 
     def __init__(self, *args, **kwargs):
         """Refer to TestCase.__init__ for parameters and their documentation"""
 
-        super(ZTestCaseSlave, self).__init__(*args, ptsproject_name = "zephyr",
+        super(ZTestCaseSlave, self).__init__(*args, ptsproject_name="mynewt",
                                              **kwargs)

@@ -23,10 +23,10 @@ import sys
 import time
 
 import autoptsclient_common as autoptsclient
-import ptsprojects.zephyr as autoprojects
+import ptsprojects.mynewt as autoprojects
 import ptsprojects.stack as stack
 from pybtp import btp
-from ptsprojects.zephyr.iutctl import get_iut
+from ptsprojects.mynewt.iutctl import get_iut
 
 import bot.common
 
@@ -122,8 +122,7 @@ def run_tests(args, iut_config):
 
     tty = './auto-pts-tester'
     callback_thread = autoptsclient.init_core()
-    # test_db_name = "zephyr_" + str(args["board"])
-    test_db_name = None
+    test_db_name = "mynewt_" + str(args["board"])
 
     ptses = []
     for ip in args["server_ip"]:
@@ -202,11 +201,11 @@ def main(cfg):
                                         'targets', 'bttester', 'app', 'apps',
                                         'bttester', 'bttester.elf')
 
-    # zephyr_hash = \
+    # mynewt_hash = \
     #     bot.common.update_sources(os.path.abspath(args['project_path']),
     #                               'origin')
 
-    zephyr_hash = 'hash'
+    mynewt_hash = 'hash'
 
     summary, results, descriptions, regressions = \
         run_tests(args, cfg.get('iut_config', {}))
@@ -233,7 +232,7 @@ def main(cfg):
     #             name + " - " + descriptions.get(name, "no description"))
     #
     #     reg_html = bot.common.regressions2html(_regressions)
-    #     bot.common.send_mail(cfg['mail'], None, zephyr_hash, args["board"],
+    #     bot.common.send_mail(cfg['mail'], None, mynewt_hash, args["board"],
     #                          [summary_html, reg_html, url_html])
 
     bot.common.cleanup()
