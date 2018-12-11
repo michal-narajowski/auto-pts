@@ -192,8 +192,6 @@ def hdl_wid_18(desc):
     """
     stack = get_stack()
 
-    time.sleep(2)
-
     stack.mesh.net_recv_ev_store.data = False
 
     if stack.mesh.net_recv_ev_data.data is None:
@@ -217,15 +215,9 @@ def hdl_wid_18(desc):
     src = int(params.get('SRC'), 16)
     dst = int(params.get('DST'), 16)
 
-    print("Expected: ")
-    print("PDU={} TTL={} CTL={} SRC={} DST={}".format(pdu, ttl, ctl, src, dst))
-
     (recv_ttl, recv_ctl, recv_src, recv_dst, recv_pdu) = \
         stack.mesh.net_recv_ev_data.data
     recv_pdu = hex(int(recv_pdu, 16))
-
-    print("Received: ")
-    print("PDU={} TTL={} CTL={} SRC={} DST={}".format(recv_pdu, recv_ttl, recv_ctl, recv_src, recv_dst))
 
     if pdu == recv_pdu and ttl == recv_ttl and ctl == recv_ctl \
             and src == recv_src and dst == recv_dst:
@@ -651,29 +643,22 @@ def hdl_wid_103(desc):
     :return:
     """
     # Mesh Provisioning data in
-    print("")
     attr = btp.gatts_get_attrs(type_uuid='2adb')
     if not attr:
-        print("not attr 2adb")
         return
 
     (handle, permission, type_uuid) = attr.pop()
-    if not (permission & Perm.write):
-        print("not permission & Perm.write 1 {} {}".format(permission, Perm.write))
+    if not permission & Perm.write:
         return False
 
     # Mesh Provisioning data out
     attr = btp.gatts_get_attrs(type_uuid='2adc')
     if not attr:
-        print("not attr 2adc")
         return
 
     (handle, permission, type_uuid) = attr.pop()
     if permission & Perm.write:
-        print("not permission & Perm.write 2")
         return False
-    print("TRUE")
-    print("")
     return True
 
 

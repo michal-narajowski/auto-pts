@@ -45,7 +45,7 @@ def test_cases(ptses):
     pts -- Instance of PyPTS"""
 
     pts = ptses[0]
-    pts2 = ptses[0]
+    pts2 = ptses[1]
 
     stack = get_stack()
     pts_bd_addr = pts.q_bd_addr

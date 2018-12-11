@@ -50,18 +50,6 @@ def get_qemu_cmd(kernel_image):
     return qemu_cmd
 
 
-def flush_serial(tty):
-    """Clear the serial port buffer
-    :param tty: file path of the terminal
-    :return: None
-    """
-    if not tty:
-        return
-
-    subprocess.check_call(['while', 'read', '-t', '0', 'var', '<', tty, ';', 'do',
-                'continue;', 'done'])
-
-
 class ZephyrCtl:
     '''Zephyr OS Control Class'''
 
@@ -92,7 +80,6 @@ class ZephyrCtl:
         self.btp_socket.open()
 
         if self.tty_file:
-            # flush_serial(self.tty_file)
             socat_cmd = ("socat -x -v %s,rawer,b115200 UNIX-CONNECT:%s" %
                          (self.tty_file, BTP_ADDRESS))
 
