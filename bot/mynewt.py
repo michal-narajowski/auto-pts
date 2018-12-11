@@ -54,7 +54,7 @@ def _validate_pair(ob):
     return True
 
 
-def build_and_flash(project_path, board, conf_file=None):
+def build_and_flash(project_path, board, overlay=None):
     """Build and flash Mynewt binary
     :param project_path: Mynewt source path
     :param board: IUT
@@ -62,7 +62,7 @@ def build_and_flash(project_path, board, conf_file=None):
     :return: None
     """
     logging.debug("{}: {} {} {}". format(build_and_flash.__name__, project_path,
-                                         board, conf_file))
+                                         board, overlay))
 
     check_call('rm -rf bin/'.split(), cwd=project_path)
     check_call('rm -rf targets/{}_boot/'.format(board).split(), cwd=project_path)
@@ -76,6 +76,10 @@ def build_and_flash(project_path, board, conf_file=None):
 
     check_call('newt target set bttester bsp=@apache-mynewt-core/hw/bsp/{}'.format(board).split(), cwd=project_path)
     check_call('newt target set bttester app=@apache-mynewt-nimble/apps/bttester'.split(), cwd=project_path)
+
+    if overlay is not None:
+        config = ':'.join(['{}={}'.format(k,v) for k, v in overlay.items()])
+        check_call('newt target set bttester syscfg={}'.format(config).split(), cwd=project_path)
 
     check_call('newt build {}_boot'.format(board).split(), cwd=project_path)
     check_call('newt build bttester'.split(), cwd=project_path)
@@ -140,6 +144,7 @@ def run_tests(args, iut_config):
                           callback_thread.clear_pending_responses)
     # cache = autoptsclient.cache_workspace(pts)
 
+    overlay = None
     default_to_omit = []
 
     for config, value in iut_config.items():
@@ -151,16 +156,16 @@ def run_tests(args, iut_config):
     for config, value in iut_config.items():
         if 'overlay' in value:
             # TODO:
-            continue
-            # to_run = value['test_cases']
-            # to_omit = None
+            overlay = value['overlay']
+            to_run = value['test_cases']
+            to_omit = None
         else:
             to_run = value['test_cases']
             to_omit = default_to_omit
 
-        # build_and_flash(args["project_path"], autopts2board[args["board"]],
-        #                 config)
-        time.sleep(10)
+        build_and_flash(args["project_path"], autopts2board[args["board"]],
+                        overlay)
+        time.sleep(1)
 
         autoprojects.iutctl.init(args["kernel_image"], tty, args["board"])
 
