@@ -228,26 +228,26 @@ def main(cfg):
                                               descriptions)
     logs_file = bot.common.archive_recursive("logs")
 
-    # if 'gdrive' in cfg:
-    #     drive = bot.common.Drive(cfg['gdrive'])
-    #     url = drive.new_workdir(args['board'])
-    #     drive.upload(report_file)
-    #     drive.upload(logs_file)
-    #     # drive.upload("TestCase.db")
-    #
-    # if 'mail' in cfg:
-    #     summary_html = bot.common.status_dict2summary_html(summary)
-    #     url_html = bot.common.url2html(url, "Results on Google Drive")
-    #
-    #     # Provide test case description
-    #     _regressions = []
-    #     for name in regressions:
-    #         _regressions.append(
-    #             name + " - " + descriptions.get(name, "no description"))
-    #
-    #     reg_html = bot.common.regressions2html(_regressions)
-    #     bot.common.send_mail(cfg['mail'], None, mynewt_hash, args["board"],
-    #                          [summary_html, reg_html, url_html])
+    if 'gdrive' in cfg:
+        drive = bot.common.Drive(cfg['gdrive'])
+        url = drive.new_workdir(args['board'])
+        drive.upload(report_file)
+        drive.upload(logs_file)
+        drive.upload("TestCase.db")
+
+    if 'mail' in cfg:
+        summary_html = bot.common.status_dict2summary_html(summary)
+        url_html = bot.common.url2html(url, "Results on Google Drive")
+
+        # Provide test case description
+        _regressions = []
+        for name in regressions:
+            _regressions.append(
+                name + " - " + descriptions.get(name, "no description"))
+
+        reg_html = bot.common.regressions2html(_regressions)
+        bot.common.send_mail(cfg['mail'], None, mynewt_hash_status, args["board"],
+                             [summary_html, reg_html, url_html])
 
     bot.common.cleanup()
 
