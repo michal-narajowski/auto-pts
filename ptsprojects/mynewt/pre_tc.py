@@ -148,9 +148,9 @@ def main():
     subprocess.check_call('rm -rf ./auto-pts-tester', shell=True)
     subprocess.check_call('rm -rf ./iut_console', shell=True)
 
-    run_btmon()
+    # run_btmon()
     run_rtt2pty()
-    run_rtt2pty_console()
+    # run_rtt2pty_console()
 
     while True:
         line = sys.stdin.readline()
