@@ -144,7 +144,6 @@ def run_tests(args, iut_config):
                           callback_thread.clear_pending_responses)
     # cache = autoptsclient.cache_workspace(pts)
 
-    overlay = None
     default_to_omit = []
 
     for config, value in iut_config.items():
@@ -154,6 +153,8 @@ def run_tests(args, iut_config):
             default_to_omit.append(test_case)
 
     for config, value in iut_config.items():
+        overlay = None
+
         if 'overlay' in value:
             # TODO:
             overlay = value['overlay']
