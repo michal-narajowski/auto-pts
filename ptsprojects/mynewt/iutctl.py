@@ -16,6 +16,7 @@
 import subprocess
 import logging
 import shlex
+import time
 
 from pybtp import defs
 from pybtp.types import BTPError
@@ -152,12 +153,21 @@ class Board:
         """
         log("About to reset DUT: %r", self.reset_cmd)
 
-        reset_process = subprocess.Popen(shlex.split(self.reset_cmd),
-                                         shell=False,
-                                         stdout=IUT_LOG_FO,
-                                         stderr=IUT_LOG_FO)
-        if reset_process.wait():
-            logging.error("reset failed")
+        success = False
+        retry_max = 5
+        retry_count = 0
+
+        while (not success) and (retry_count >= retry_max):
+            reset_process = subprocess.Popen(shlex.split(self.reset_cmd),
+                                             shell=False,
+                                             stdout=IUT_LOG_FO,
+                                             stderr=IUT_LOG_FO)
+            if reset_process.wait():
+                logging.error("reset failed")
+                retry_count = 1
+                time.sleep(2)
+            else:
+                success = True
 
     def get_reset_cmd(self):
         """Return reset command for a board"""
