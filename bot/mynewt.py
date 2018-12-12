@@ -207,11 +207,19 @@ def main(cfg):
                                         'targets', 'bttester', 'app', 'apps',
                                         'bttester', 'bttester.elf')
 
-    # mynewt_hash = \
-    #     bot.common.update_sources(os.path.abspath(args['project_path']),
-    #                               'origin')
+    core_path = os.path.join(os.path.abspath(args['project_path']), 'repos',
+                             'apache-mynewt-core')
+    nimble_path = os.path.join(os.path.abspath(args['project_path']), 'repos',
+                               'apache-mynewt-nimble')
 
-    mynewt_hash = 'hash'
+    core_hash = \
+        bot.common.update_sources(core_path)
+
+    nimble_hash = \
+        bot.common.update_sources(nimble_path)
+
+    mynewt_hash_status = 'Mynewt HEAD is on: core={}, nimble={}'.format(
+        core_hash, nimble_hash)
 
     summary, results, descriptions, regressions = \
         run_tests(args, cfg.get('iut_config', {}))
