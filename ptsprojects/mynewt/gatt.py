@@ -45,19 +45,17 @@ class Value:
     long_2 = eight_bytes_2 * 4
 
 
-iut_attr_db_off = 0x000b
+
+def __get_attr_hdl_str(hdl):
+    return '{0:x}'.format(hdl, 'x')
 
 
-def __get_attr_hdl_str(offset):
-    return '{0:x}'.format(iut_attr_db_off + offset, 'x')
+def __get_attr_u16_hdl_str(hdl):
+    return '{0:04x}'.format(hdl, 'x')
 
 
-def __get_attr_u16_hdl_str(offset):
-    return '{0:04x}'.format(iut_attr_db_off + offset, 'x')
-
-
-def __get_attr_u16_hdl_uc_str(offset):
-    return '{0:04x}'.format(iut_attr_db_off + offset, 'X')
+def __get_attr_u16_hdl_uc_str(hdl):
+    return '{0:04x}'.format(hdl, 'X')
 
 
 def verify_gatt_sr_gpa_bv_04_c(description):
@@ -172,11 +170,11 @@ def test_cases_server(pts):
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on, start_wid=1)],
                   verify_wids={24: ("Attribute Handle = '%s'" %
-                                    __get_attr_u16_hdl_uc_str(5),
+                                    __get_attr_u16_hdl_uc_str(0x1a),
                                     "Included Service Attribute handle = '%s'" %
-                                    __get_attr_u16_hdl_uc_str(1),
+                                    __get_attr_u16_hdl_uc_str(0x16),
                                     "End Group Handle = '%s'" %
-                                    __get_attr_u16_hdl_uc_str(3),
+                                    __get_attr_u16_hdl_uc_str(0x18),
                                     "Service UUID = '%s'" % UUID.VND16_1)}),
         ZTestCase("GATT", "GATT/SR/GAD/BV-04-C",
                   pre_conditions +
@@ -317,7 +315,7 @@ def test_cases_server(pts):
                         TestFunc(btp.gatts_start_server),
                         TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
         ZTestCase("GATT", "GATT/SR/GAR/BI-11-C",
-                  edit1_wids={121: __get_attr_u16_hdl_str(3),
+                  edit1_wids={121: __get_attr_u16_hdl_str(24),
                               122: UUID.VND16_2},
                   cmds=pre_conditions +
                          [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
@@ -735,7 +733,7 @@ def test_cases_server(pts):
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on, start_wid=1),
                    TestFunc(sleep, 1, start_wid=92),
-                   TestFunc(btp.gatts_set_val, iut_attr_db_off + 3, '01',
+                   TestFunc(btp.gatts_set_val, 3, '01',
                             start_wid=92)]),
         ZTestCase("GATT", "GATT/SR/GAI/BV-01-C",
                   pre_conditions +
@@ -748,7 +746,7 @@ def test_cases_server(pts):
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on, start_wid=1),
                    TestFunc(sleep, 1, start_wid=98),
-                   TestFunc(btp.gatts_set_val, iut_attr_db_off + 3, '01',
+                   TestFunc(btp.gatts_set_val, 3, '01',
                             start_wid=98)]),
         ZTestCase("GATT", "GATT/SR/GAS/BV-01-C",
                   edit1_wids={2000: btp.var_store_get_passkey},
@@ -775,7 +773,7 @@ def test_cases_server(pts):
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on, start_wid=1),
                    TestFunc(sleep, 1, start_wid=98),
-                   TestFunc(btp.gatts_set_val, iut_attr_db_off + 3, '01',
+                   TestFunc(btp.gatts_set_val, 3, '01',
                             start_wid=98)]),
         # ZTestCase("GATT", "GATT/SR/GPA/BV-01-C",
         #           pre_conditions +
