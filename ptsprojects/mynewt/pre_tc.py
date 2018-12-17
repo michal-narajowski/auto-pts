@@ -99,15 +99,22 @@ def run_btmon():
 def run_rtt2pty():
     global RTT2PTY_PROC
 
+    subprocess.check_call('rm -rf ./auto-pts-tester', shell=True)
+
     cmd = [RTT2PTY_PATH, "-2", "-b", "bttester", "-l", "auto-pts-tester"]
     print("Executing command: {}".format(' '.join(cmd)))
 
-    RTT2PTY_PROC = popen_and_call(
-        cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False)
+    RTT2PTY_PROC = subprocess.Popen(cmd, stdout=subprocess.PIPE,
+                                    stderr=subprocess.PIPE, shell=False)
+
+    # RTT2PTY_PROC = popen_and_call(
+    #     cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False)
 
 
 def run_rtt2pty_console():
     global RTT2PTY_CONSOLE_PROC
+
+    subprocess.check_call('rm -rf ./iut_console', shell=True)
 
     cmd = [RTT2PTY_PATH, "-2", "-l", "iut_console"]
     print("Executing command: {}".format(' '.join(cmd)))
@@ -145,11 +152,8 @@ def main():
 
     print("#DBG# " + TEST_CASE)
 
-    subprocess.check_call('rm -rf ./auto-pts-tester', shell=True)
-    subprocess.check_call('rm -rf ./iut_console', shell=True)
-
-    # run_btmon()
     run_rtt2pty()
+    # run_btmon()
     # run_rtt2pty_console()
 
     while True:
