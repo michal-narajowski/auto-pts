@@ -157,7 +157,7 @@ class Board:
         retry_max = 5
         retry_count = 0
 
-        while (not success) and (retry_count >= retry_max):
+        while (not success) and (retry_count < retry_max):
             reset_process = subprocess.Popen(shlex.split(self.reset_cmd),
                                              shell=False,
                                              stdout=IUT_LOG_FO,
