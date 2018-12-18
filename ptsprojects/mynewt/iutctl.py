@@ -164,7 +164,7 @@ class Board:
                                              stderr=IUT_LOG_FO)
             if reset_process.wait():
                 logging.error("reset failed")
-                retry_count = 1
+                retry_count += 1
                 time.sleep(2)
             else:
                 success = True
