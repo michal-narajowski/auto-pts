@@ -628,14 +628,15 @@ def test_cases_server(pts):
                    TestFunc(btp.gatts_set_val, 0, Value.long_1),
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
-        ZTestCase("GATT", "GATT/SR/GAW/BI-11-C",
-                  pre_conditions +
-                  [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
-                   TestFunc(btp.gatts_add_char, 0, Prop.read | Prop.write,
-                            Perm.read | Perm.write_authz, UUID.VND16_2),
-                   TestFunc(btp.gatts_set_val, 0, Value.long_1),
-                   TestFunc(btp.gatts_start_server),
-                   TestFunc(btp.gap_adv_ind_on)]),
+        # Nimble doesn't support long write with authorization
+        # ZTestCase("GATT", "GATT/SR/GAW/BI-11-C",
+        #           pre_conditions +
+        #           [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
+        #            TestFunc(btp.gatts_add_char, 0, Prop.read | Prop.write,
+        #                     Perm.read | Perm.write_authz, UUID.VND16_2),
+        #            TestFunc(btp.gatts_set_val, 0, Value.long_1),
+        #            TestFunc(btp.gatts_start_server),
+        #            TestFunc(btp.gap_adv_ind_on)]),
         ZTestCase("GATT", "GATT/SR/GAW/BI-12-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
