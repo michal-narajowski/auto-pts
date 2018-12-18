@@ -734,7 +734,7 @@ def test_cases_server(pts):
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on, start_wid=1),
                    TestFunc(sleep, 1, start_wid=92),
-                   TestFunc(btp.gatts_set_val, 3, '01',
+                   TestFunc(btp.gatts_set_val, 1, '01',
                             start_wid=92)]),
         ZTestCase("GATT", "GATT/SR/GAI/BV-01-C",
                   pre_conditions +
@@ -747,7 +747,7 @@ def test_cases_server(pts):
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on, start_wid=1),
                    TestFunc(sleep, 1, start_wid=98),
-                   TestFunc(btp.gatts_set_val, 3, '01',
+                   TestFunc(btp.gatts_set_val, 1, '01',
                             start_wid=98)]),
         ZTestCase("GATT", "GATT/SR/GAS/BV-01-C",
                   edit1_wids={2000: btp.var_store_get_passkey},
