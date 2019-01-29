@@ -21,7 +21,8 @@ import schedule
 import time
 
 from bot.config import BotProjects
-from bot.zephyr import main as zephyr
+# from bot.zephyr import main as zephyr
+from bot.mynewt import main as mynewt
 
 # TODO Find more sophisticated way
 weekdays2schedule = {
@@ -35,7 +36,8 @@ weekdays2schedule = {
 }
 
 project2main = {
-    'zephyr': zephyr,
+    # 'zephyr': zephyr,
+    'mynewt': mynewt,
 }
 
 
