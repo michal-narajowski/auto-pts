@@ -17,16 +17,15 @@
 
 import logging
 import os
-import re
 import subprocess
 import sys
 import time
 
 import autoptsclient_common as autoptsclient
-import ptsprojects.zephyr as autoprojects
+import ptsprojects.mynewt as autoprojects
 import ptsprojects.stack as stack
 from pybtp import btp
-from ptsprojects.zephyr.iutctl import get_iut
+from ptsprojects.mynewt.iutctl import get_iut
 
 import bot.common
 
@@ -42,128 +41,6 @@ def check_call(cmd, env=None, cwd=None, shell=True):
     cmd = subprocess.list2cmdline(cmd)
 
     return subprocess.check_call(cmd, env=env, cwd=cwd, shell=shell)
-
-
-def _validate_pair(ob):
-    try:
-        if not (len(ob) == 2):
-            raise ValueError
-    except BaseException:
-        return False
-
-    return True
-
-
-def source_zephyr_env(zephyr_wd):
-    """Sets the project environment variables
-    :param zephyr_wd: Zephyr source path
-    :return: environment variables set
-    """
-    logging.debug("{}: {}".format(source_zephyr_env.__name__, zephyr_wd))
-
-    cmd = ['source', './zephyr-env.sh', '&&', 'env']
-    cmd = subprocess.list2cmdline(cmd)
-
-    p = subprocess.Popen(cmd, cwd=zephyr_wd, shell=True,
-                         stdout=subprocess.PIPE)
-
-    lines = p.stdout.readlines()
-    pairs = map(lambda l: l.decode('UTF-8').rstrip().split('=', 1), lines)
-    valid_pairs = filter(_validate_pair, pairs)
-    env = dict(valid_pairs)
-    p.communicate()
-
-    # Those are not properly parsed, remove them, we don't need them
-    env.pop('BASH_FUNC_module%%', None)
-    env.pop('BASH_FUNC_scl%%', None)
-
-    return env
-
-
-def build_and_flash(zephyr_wd, board, conf_file=None):
-    """Build and flash Zephyr binary
-    :param zephyr_wd: Zephyr source path
-    :param board: IUT
-    :param conf_file: configuration file to be used
-    :return: None
-    """
-    logging.debug("{}: {} {} {}". format(build_and_flash.__name__, zephyr_wd,
-                                         board, conf_file))
-    tester_outdir = os.path.join(zephyr_wd, "tests", "bluetooth", "tester",
-                                 "outdir")
-
-    if os.path.isdir(tester_outdir):
-        check_call(['rm', '-rf', tester_outdir], cwd=zephyr_wd)
-
-    os.makedirs(tester_outdir)
-
-    # Set Zephyr project env variables
-    env = source_zephyr_env(zephyr_wd)
-
-    cmd = ['cmake', '-GNinja', '-DBOARD={}'.format(board)]
-    if conf_file:
-        cmd.append('-DCONF_FILE={}'.format(conf_file))
-    cmd.append('..')
-
-    check_call(cmd, env=env, cwd=tester_outdir)
-    check_call(['ninja'], env=env, cwd=tester_outdir)
-    check_call(['nrfjprog', '--eraseall', '-f', 'nrf52'])
-    check_call(['nrfjprog', '--program', 'zephyr/zephyr.hex', '-f', 'nrf52'],
-               cwd=tester_outdir)
-    check_call(['nrfjprog', '-p'])
-
-
-def flush_serial(tty):
-    """Clear the serial port buffer
-    :param tty: file path of the terminal
-    :return: None
-    """
-    if not tty:
-        return
-
-    check_call(['while', 'read', '-t', '0', 'var', '<', tty, ';', 'do',
-                'continue;', 'done'])
-
-
-def apply_overlay(zephyr_wd, base_conf, cfg_name, overlay):
-    """Duplicates default_conf configuration file and applies overlay changes
-    to it.
-    :param zephyr_wd: Zephyr source path
-    :param base_conf: base configuration file
-    :param cfg_name: new configuration file name
-    :param overlay: defines changes to be applied
-    :return: None
-    """
-    tester_app_dir = os.path.join(zephyr_wd, "tests", "bluetooth", "tester")
-    cwd = os.getcwd()
-
-    os.chdir(tester_app_dir)
-
-    with open(base_conf, 'r') as base:
-        with open(cfg_name, 'w') as config:
-            for line in base.readlines():
-                re_config = re.compile(
-                    r'(?P<config_key>\w+)=(?P<config_value>\w+)*')
-                match = re_config.match(line)
-                if match and match.group('config_key') in overlay:
-                    v = overlay.pop(match.group('config_key'))
-                    config.write(
-                        "{}={}\n".format(
-                            match.group('config_key'), v))
-                else:
-                    config.write(line)
-
-            # apply what's left
-            for k, v in overlay.items():
-                config.write("{}={}\n".format(k, v))
-
-    os.chdir(cwd)
-
-
-autopts2board = {
-    None: None,
-    'nrf52': 'nrf52840_pca10056'
-}
 
 
 def get_tty_path(name):
@@ -193,6 +70,103 @@ def get_tty_path(name):
     return None
 
 
+def build_and_flash(project_path, board, overlay=None):
+    """Build and flash Mynewt binary
+    :param project_path: Mynewt source path
+    :param board: IUT
+    :param overlay: configuration map to be used
+    :return: TTY path
+    """
+    logging.debug("{}: {} {} {}".format(build_and_flash.__name__, project_path,
+                                        board, overlay))
+
+    check_call('rm -rf bin/'.split(), cwd=project_path)
+    check_call('rm -rf targets/{}_boot/'.format(board).split(),
+               cwd=project_path)
+    check_call('rm -rf targets/bttester/'.split(), cwd=project_path)
+
+    check_call('newt target create {}_boot'.format(board).split(),
+               cwd=project_path)
+    check_call('newt target create bttester'.split(), cwd=project_path)
+
+    check_call(
+        'newt target set {}_boot bsp=@apache-mynewt-core/hw/bsp/{}'.format(
+            board, board).split(), cwd=project_path)
+    check_call(
+        'newt target set {}_boot app=@apache-mynewt-core/apps/boot'.format(
+            board).split(), cwd=project_path)
+
+    check_call(
+        'newt target set bttester bsp=@apache-mynewt-core/hw/bsp/{}'.format(
+            board).split(), cwd=project_path)
+    check_call(
+        'newt target set bttester app=@apache-mynewt-nimble/apps/bttester'.split(),
+        cwd=project_path)
+
+    if overlay is not None:
+        config = ':'.join(['{}={}'.format(k, v) for k, v in overlay.items()])
+        check_call('newt target set bttester syscfg={}'.format(config).split(),
+                   cwd=project_path)
+
+    check_call('newt build {}_boot'.format(board).split(), cwd=project_path)
+    check_call('newt build bttester'.split(), cwd=project_path)
+
+    check_call('newt create-image {}_boot 0.0.0'.format(board).split(),
+               cwd=project_path)
+    check_call('newt create-image bttester 0.0.0'.split(), cwd=project_path)
+
+    check_call('newt load {}_boot'.format(board).split(), cwd=project_path)
+    check_call('newt load bttester'.split(), cwd=project_path)
+
+    return get_tty_path("J-Link")
+
+
+def get_target_description(project_path):
+    return subprocess.check_output('newt target show bttester', shell=True,
+                                   cwd=project_path)
+
+
+def get_target_config(project_path):
+    return subprocess.check_output('newt target config flat bttester',
+                                   shell=True, cwd=project_path)
+
+
+def get_newt_info(project_path):
+    return subprocess.check_output('newt info',
+                                   shell=True, cwd=project_path)
+
+
+def get_newt_version(project_path):
+    return subprocess.check_output('newt version',
+                                   shell=True, cwd=project_path)
+
+
+def get_build_info_file(project_path):
+    file_name = "build_info.txt"
+    build_info_str = ''
+
+    build_info_str += 'newt info:\n'
+    build_info_str += get_newt_info(project_path)
+    build_info_str += '\n'
+
+    build_info_str += 'newt version:\n'
+    build_info_str += get_newt_version(project_path)
+    build_info_str += '\n'
+
+    build_info_str += 'newt target show:\n'
+    build_info_str += get_target_description(project_path)
+    build_info_str += '\n'
+
+    build_info_str += 'newt target config:\n'
+    build_info_str += get_target_config(project_path)
+    build_info_str += '\n'
+
+    with open(file_name, "w") as text_file:
+        text_file.write(build_info_str)
+
+    return file_name
+
+
 def get_test_cases(ptses):
     """Get all test cases
     :param pts: PTS proxy instance
@@ -219,22 +193,26 @@ def run_tests(args, iut_config):
     results = {}
     status = {}
     descriptions = {}
+    total_regressions = []
 
-    tty = get_tty_path("J-Link")
     callback_thread = autoptsclient.init_core()
 
     ptses = []
-    for ip in args["server_ip"]:
+    for ip, local in zip(args['server_ip'], args['local_ip']):
         ptses.append(autoptsclient.init_pts(ip,
                                             args["workspace"],
                                             args["bd_addr"],
                                             args["enable_max_logs"],
                                             callback_thread,
-                                            "zephyr_" + str(args["board"])))
+                                            "mynewt_" + str(args["board"]),
+                                            local))
 
     btp.init(get_iut)
     # Main instance of PTS
     pts = ptses[0]
+
+    # Read PTS Version and keep it for later use
+    args['pts_ver'] = "%x" % pts.get_version()
 
     stack.init_stack()
     stack_inst = stack.get_stack()
@@ -242,30 +220,30 @@ def run_tests(args, iut_config):
                           callback_thread.clear_pending_responses)
     cache = autoptsclient.cache_workspace(pts)
 
-    default_conf = None
     default_to_omit = []
 
     for config, value in iut_config.items():
+        if 'overlay' not in value:
+            continue
         for test_case in value.get('test_cases', []):
             default_to_omit.append(test_case)
-        if 'test_cases' not in value:
-            default_conf = config
 
     for config, value in iut_config.items():
+        overlay = None
+
         if 'overlay' in value:
-            apply_overlay(args["project_path"], default_conf, config,
-                          value['overlay'])
+            # TODO:
+            overlay = value['overlay']
             to_run = value['test_cases']
             to_omit = None
-        elif 'test_cases' not in value:  # DEFAULT CASE
-            to_run = None
-            to_omit = default_to_omit
         else:
-            continue
+            to_run = value['test_cases']
+            to_omit = default_to_omit
 
-        build_and_flash(args["project_path"], autopts2board[args["board"]],
-                        config)
-        flush_serial(tty)
+        tty = build_and_flash(args["project_path"], args["board"],
+                              overlay)
+        logging.debug("TTY path: %s" % tty)
+
         time.sleep(10)
 
         autoprojects.iutctl.init(args["kernel_image"], tty, args["board"])
@@ -277,6 +255,7 @@ def run_tests(args, iut_config):
 
         status_count, results_dict, regressions = autoptsclient.run_test_cases(
             ptses, test_cases, additional_test_cases, int(args["retry"]))
+        total_regressions += regressions
 
         for k, v in status_count.items():
             if k in status.keys():
@@ -295,18 +274,58 @@ def run_tests(args, iut_config):
 
     pts.unregister_xmlrpc_ptscallback()
 
-    return status, results, descriptions, regressions
+    return status, results, descriptions, total_regressions
+
+
+def compose_mail(args, mynewt_hash_html, summary_html,
+                 reg_html, log_url_html, name):
+    """ Create a email body
+    """
+
+    body = '''
+    <p>This is automated email and do not reply.</p>
+    <h1>Bluetooth test session</h1>
+    <h2>1. IUT Setup</h2>
+    <b> Board:</b> {} <br>
+    <b> Source:</b> {} </p>
+    <h2>2. PTS Setup</h2>
+    <p><b> OS:</b> Windows 10 <br>
+    <b> Platform:</b> VirtualBox <br>
+    <b> Version:</b> {} </p>
+    <h2>3. Test Results</h2>
+    {}
+    {}
+    <h3>Logs</h3>
+    {}
+    <p>Sincerely,</p>
+    <p> {}</p>
+    '''.format(args["board"], mynewt_hash_html, args['pts_ver'],
+               summary_html, reg_html, log_url_html, name)
+
+    subject = "[Mynewt Nimble] AutoPTS test session results"
+
+    return subject, body
 
 
 def main(cfg):
-    args = cfg['auto_pts']
-    args['kernel_image'] = os.path.join(args['project_path'], 'tests',
-                                        'bluetooth', 'tester', 'outdir',
-                                        'zephyr', 'zephyr.elf')
+    print("Mynewt bot start!")
 
-    zephyr_hash = \
-        bot.common.update_sources(os.path.abspath(args['project_path']),
-                                  'upstream')
+    args = cfg['auto_pts']
+    args['kernel_image'] = None
+
+    core_path = os.path.join(os.path.abspath(args['project_path']), 'repos',
+                             'apache-mynewt-core')
+    nimble_path = os.path.join(os.path.abspath(args['project_path']), 'repos',
+                               'apache-mynewt-nimble')
+
+    core_hash = \
+        bot.common.update_sources(core_path)
+
+    nimble_hash = \
+        bot.common.update_sources(nimble_path)
+
+    mynewt_hash_status = 'mynewt-core={}, mynewt-nimble={}'.format(
+        core_hash, nimble_hash)
 
     summary, results, descriptions, regressions = \
         run_tests(args, cfg.get('iut_config', {}))
@@ -315,16 +334,21 @@ def main(cfg):
                                               descriptions)
     logs_file = bot.common.archive_recursive("logs")
 
+    build_info_file = get_build_info_file(os.path.abspath(args['project_path']))
+
     if 'gdrive' in cfg:
         drive = bot.common.Drive(cfg['gdrive'])
         url = drive.new_workdir(args['board'])
         drive.upload(report_file)
         drive.upload(logs_file)
+        drive.upload(build_info_file)
         drive.upload("TestCase.db")
 
     if 'mail' in cfg:
+        print("Sending email ...")
+
+        # Summary
         summary_html = bot.common.status_dict2summary_html(summary)
-        url_html = bot.common.url2html(url, "Results on Google Drive")
 
         # Provide test case description
         _regressions = []
@@ -333,8 +357,20 @@ def main(cfg):
                 name + " - " + descriptions.get(name, "no description"))
 
         reg_html = bot.common.regressions2html(_regressions)
-        bot.common.send_mail(cfg['mail'], None, zephyr_hash, args["board"],
-                             [summary_html, reg_html, url_html])
+
+        # Log in Google drive in HTML format
+        if 'gdrive' in cfg:
+            log_url_html = bot.common.url2html(url, "Results on Google Drive")
+        else:
+            log_url_html = "Not Available"
+
+        subject, body = compose_mail(args, mynewt_hash_status, summary_html,
+                                     reg_html, log_url_html,
+                                     cfg['mail']['name'])
+
+        bot.common.send_mail(cfg['mail'], subject, body)
+
+        print("Done")
 
     bot.common.cleanup()
 
