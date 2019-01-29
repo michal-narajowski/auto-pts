@@ -15,6 +15,7 @@
 
 import logging
 import sys
+from uuid import UUID
 from pybtp import btp
 import re
 from binascii import hexlify
@@ -52,7 +53,8 @@ def hdl_wid_17(desc):
         return False
 
     # Normalize UUIDs
-    pts_services = [hex(int(service, 16)) for service in pts_services]
+    pts_services = [hex(int(service, 16)) if len(service) == 4 else
+                    UUID(hex=service).urn[9:] for service in pts_services]
 
     iut_services = []
 
@@ -93,5 +95,40 @@ def hdl_wid_52(desc):
     value_read = int(hexlify(value_read), 16)
 
     if value_read != value:
+        return False
+    return True
+
+
+def hdl_wid_56(desc):
+    pattern_pair = re.compile("Handle pair = '([0-9a-fA-F]+)'O "
+                              "'([0-9a-fA-F]+)'O")
+    params_pair = pattern_pair.findall(desc)
+    if not params_pair:
+        logging.error("%s parsing error", hdl_wid_56.__name__)
+        return False
+
+    pattern_value = re.compile("value='([0-9a-fA-F]+)'O")
+    params_value = pattern_value.findall(desc)
+    if not params_value:
+        logging.error("%s parsing error", hdl_wid_56.__name__)
+        return False
+
+    (handle1, handle2) = params_pair[0]
+    value = params_value[0]
+
+    logging.debug("Handle pair = '%s' '%s' value='%s'", handle1, handle2, value)
+
+    (_, _, value_read1) = btp.gatts_get_attr_val(handle1)
+    value_read1 = hexlify(value_read1).upper()
+    logging.debug("Value read 1='%s'", value_read1)
+
+    (_, _, value_read2) = btp.gatts_get_attr_val(handle2)
+    value_read2 = hexlify(value_read2).upper()
+    logging.debug("Value read 2='%s'", value_read2)
+
+    combined_value = value_read1 + value_read2
+    logging.debug("Combined value='%s'", combined_value)
+
+    if value != combined_value:
         return False
     return True
