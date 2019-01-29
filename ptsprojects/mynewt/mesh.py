@@ -18,7 +18,7 @@
 try:
     from ptsprojects.testcase import TestCase, TestCmd, TestFunc, \
         TestFuncCleanUp
-    from ptsprojects.zephyr.ztestcase import ZTestCase, ZTestCaseSlave
+    from ptsprojects.mynewt.ztestcase import ZTestCase, ZTestCaseSlave
 
 except ImportError:  # running this module as script
     import sys
@@ -28,13 +28,12 @@ except ImportError:  # running this module as script
 
     from ptsprojects.testcase import TestCase, TestCmd, TestFunc, \
         TestFuncCleanUp
-    from ptsprojects.zephyr.ztestcase import ZTestCase, ZTestCaseSlave
-
+    from ptsprojects.mynewt.ztestcase import ZTestCase, ZTestCaseSlave
 
 from pybtp import defs, btp
 from pybtp.types import MeshVals
 from ptsprojects.stack import get_stack
-from ptsprojects.zephyr.mesh_wid import mesh_wid_hdl
+from ptsprojects.mynewt.mesh_wid import mesh_wid_hdl
 from uuid import uuid4
 from binascii import hexlify
 import random
@@ -45,7 +44,6 @@ def test_cases(ptses):
     pts -- Instance of PyPTS"""
 
     pts = ptses[0]
-    pts2 = ptses[1]
 
     stack = get_stack()
     pts_bd_addr = pts.q_bd_addr
@@ -84,12 +82,6 @@ def test_cases(ptses):
             MeshVals.subscription_addr_list1)),
         TestFunc(lambda: pts.update_pixit_param(
             "MESH", "TSPX_device_uuid2", device_uuid2))]
-
-    pre_conditions_slave = [
-        TestFunc(lambda: pts.update_pixit_param(
-            "MESH", "TSPX_bd_addr_iut", stack.gap.iut_addr_get_str())),
-        TestFunc(lambda: pts2.update_pixit_param(
-            "MESH", "TSPX_device_uuid", device_uuid2))]
 
     test_cases = [
         ZTestCase("MESH", "MESH/NODE/BCN/SNB/BV-01-C", cmds=pre_conditions,
@@ -461,9 +453,15 @@ def test_cases(ptses):
         ZTestCase("MESH", "MESH/SR/MPXS/BV-09-C", cmds=pre_conditions +
                   [TestFunc(lambda: get_stack().mesh.proxy_identity_enable())],
                   generic_wid_hdl=mesh_wid_hdl),
-        ZTestCase("MESH", "MESH/SR/PROX/BI-01-C", cmds=pre_conditions,
-                  generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/SR/PROX/BV-01-C", cmds=pre_conditions,
+                  generic_wid_hdl=mesh_wid_hdl),
+    ]
+
+    if len(ptses) < 2:
+        return test_cases, []
+
+    test_cases += [
+        ZTestCase("MESH", "MESH/SR/PROX/BI-01-C", cmds=pre_conditions,
                   generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/SR/PROX/BV-02-C", cmds=pre_conditions,
                   generic_wid_hdl=mesh_wid_hdl),
@@ -492,6 +490,14 @@ def test_cases(ptses):
         ZTestCase("MESH", "MESH/SR/PROX/BV-14-C", cmds=pre_conditions,
                   generic_wid_hdl=mesh_wid_hdl),
     ]
+
+    pts2 = ptses[1]
+
+    pre_conditions_slave = [
+        TestFunc(lambda: pts.update_pixit_param(
+            "MESH", "TSPX_bd_addr_iut", stack.gap.iut_addr_get_str())),
+        TestFunc(lambda: pts2.update_pixit_param(
+            "MESH", "TSPX_device_uuid", device_uuid2))]
 
     additional_test_cases = [
         ZTestCaseSlave("MESH", "MESH/SR/PROX/BV-02-C-LT2",
@@ -567,7 +573,7 @@ def test_cases(ptses):
 
 def main():
     """Main."""
-    import ptsprojects.zephyr.iutctl as iutctl
+    import ptsprojects.mynewt.iutctl as iutctl
 
     class pts:
         pass

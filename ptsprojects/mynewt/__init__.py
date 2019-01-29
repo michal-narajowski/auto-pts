@@ -15,10 +15,10 @@
 
 """Automated PTS projects (bluetooth profiles and protocols) for Zephyr IUT"""
 
-import ptsprojects.zephyr.iutctl
+import ptsprojects.mynewt.iutctl
 
-import ptsprojects.zephyr.gap
-import ptsprojects.zephyr.gatt
-import ptsprojects.zephyr.sm
-import ptsprojects.zephyr.l2cap
-import ptsprojects.zephyr.mesh
+import ptsprojects.mynewt.gap
+import ptsprojects.mynewt.gatt
+import ptsprojects.mynewt.sm
+import ptsprojects.mynewt.l2cap
+import ptsprojects.mynewt.mesh
