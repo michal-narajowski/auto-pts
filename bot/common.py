@@ -98,7 +98,7 @@ def regressions2html(regressions_list=[]):
     return msg
 
 
-def send_mail(cfg, autopts_sha, zephyr_sha, iut, msg_list):
+def send_mail(cfg, subject, body):
     """
     :param cfg: Mailbox configuration
     :param autopts_sha: AutoPTS Git SHA
@@ -107,22 +107,10 @@ def send_mail(cfg, autopts_sha, zephyr_sha, iut, msg_list):
     :param msg_list: HTML formatted messages to enclose
     :return: None
     """
-    msg_str = "".join(msg_list)
-    body = '''
-    <p>Hello,</p>
-    <p>Here's summary from Bluetooth weekly test session</p>
-    <h4>1. Setup</h4>
-    <p> Zephyr  HEAD is on {} </p>
-    <p> IUT used {} </p>
-    {}
-    <p>Sincerely,</p>
-    <p> {}</p>
-    '''.format(zephyr_sha, iut, msg_str, cfg['name'])
-
     msg = MIMEMultipart()
     msg['From'] = cfg['sender']
     msg['To'] = COMMASPACE.join(cfg['recipients'])
-    msg['Subject'] = "AutoPTS test session results"
+    msg['Subject'] = subject
 
     msg.attach(MIMEText(body, 'html'))
 
