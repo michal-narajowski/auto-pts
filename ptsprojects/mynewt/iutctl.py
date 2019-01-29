@@ -126,11 +126,9 @@ class MynewtCtlStub:
 class Board:
     """HW DUT board"""
 
-    nrf52 = "nrf52"
-
     # for command line options
     names = [
-        nrf52
+        'nordic_pca10056'
     ]
 
     def __init__(self, board_name, kernel_image, tty_file):
