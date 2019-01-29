@@ -18,7 +18,7 @@
 try:
     from ptsprojects.testcase import TestCase, TestCmd, TestFunc, \
         TestFuncCleanUp
-    from ptsprojects.zephyr.ztestcase import ZTestCase, ZTestCaseSlave
+    from ptsprojects.mynewt.ztestcase import ZTestCase, ZTestCaseSlave
 
 except ImportError:  # running this module as script
     import sys
@@ -28,13 +28,12 @@ except ImportError:  # running this module as script
 
     from ptsprojects.testcase import TestCase, TestCmd, TestFunc, \
         TestFuncCleanUp
-    from ptsprojects.zephyr.ztestcase import ZTestCase, ZTestCaseSlave
-
+    from ptsprojects.mynewt.ztestcase import ZTestCase, ZTestCaseSlave
 
 from pybtp import defs, btp
 from pybtp.types import MeshVals
 from ptsprojects.stack import get_stack
-from ptsprojects.zephyr.mesh_wid import mesh_wid_hdl
+from ptsprojects.mynewt.mesh_wid import mesh_wid_hdl
 from uuid import uuid4
 from binascii import hexlify
 import random
@@ -45,7 +44,7 @@ def test_cases(ptses):
     pts -- Instance of PyPTS"""
 
     pts = ptses[0]
-    pts2 = ptses[1]
+    pts2 = ptses[0]
 
     stack = get_stack()
     pts_bd_addr = pts.q_bd_addr
@@ -567,7 +566,7 @@ def test_cases(ptses):
 
 def main():
     """Main."""
-    import ptsprojects.zephyr.iutctl as iutctl
+    import ptsprojects.mynewt.iutctl as iutctl
 
     class pts:
         pass
