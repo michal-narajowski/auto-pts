@@ -349,17 +349,24 @@ def archive_recursive(dir_path):
     return zip_file_path
 
 
-def update_sources(repo, remote):
+def update_sources(repo, force=False):
     """GIT Update sources
+    :param force: force updating the sources
     :param repo: project git repository path
     :param remote: remote name
     :return:
     """
     repo = git.Repo(repo)
-    repo.git.fetch(remote)
-    repo.git.checkout('master')
-    repo.git.reset('--hard', '{}/master'.format(remote))
-    repo.git.clean('-fd')
+    branch = repo.active_branch
+    if (not force) and repo.is_dirty():
+        print('Repo is dirty. Not updating')
+    else:
+        repo.git.fetch()
+        if branch.tracking_branch() is not None:
+            repo.git.reset('--hard', '{}'.format(branch.tracking_branch()))
+            repo.git.clean('-fd')
+        else:
+            print('Tracking branch is None. Not updating')
 
     return repo.git.show('-s', '--format=%H')
 
