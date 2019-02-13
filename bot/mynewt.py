@@ -136,7 +136,7 @@ def run_tests(args, iut_config):
     status = {}
     descriptions = {}
 
-    tty = './auto-pts-tester'
+    tty = '/dev/ttyACM0'
     callback_thread = autoptsclient.init_core()
     test_db_name = "mynewt_" + str(args["board"])
 
