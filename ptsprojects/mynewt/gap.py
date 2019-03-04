@@ -159,6 +159,8 @@ def test_cases(pts):
                   cmds=pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
                   generic_wid_hdl=gap_wid_hdl),
+        # TODO: GAP/BROB/BCST/BV-04-C
+        # TODO: GAP/BROB/BCST/BV-05-C
         ZTestCase("GAP", "GAP/BROB/OBSV/BV-01-C",
                   cmds=pre_conditions,
                   generic_wid_hdl=gap_wid_hdl),
@@ -297,6 +299,7 @@ def test_cases(pts):
                    TestFunc(btp.gap_set_limdiscov, start_wid=121),
                    TestFunc(btp.gap_adv_ind_on, ad=[AdData.ad_name_sh],
                             start_wid=55)]),
+        # TODO: GAP/CONN/DOCN/BV-01-C
         ZTestCase("GAP", "GAP/CONN/UCON/BV-01-C",
                   pre_conditions +
                   [TestFunc(btp.gap_set_conn, start_wid=74),
@@ -340,6 +343,9 @@ def test_cases(pts):
                             start_wid=78),
                    TestFunc(btp.gap_disconn, pts_bd_addr, Addr.le_public,
                             start_wid=77)]),
+        # TODO: GAP/CONN/ACEP/BV-02-C
+        # TODO: GAP/CONN/ACEP/BV-03-C
+        # TODO: GAP/CONN/ACEP/BV-04-C
         # FIXME: No support for sending privacy information to IUT
         # ZTestCase("GAP", "GAP/CONN/ACEP/BV-04-C",
         #           cmds=pre_conditions,
@@ -354,10 +360,14 @@ def test_cases(pts):
                             start_wid=78),
                    TestFunc(btp.gap_disconn, pts_bd_addr, Addr.le_public,
                             start_wid=77)]),
+        # TODO: GAP/CONN/GCEP/BV-05-C
+        # TODO: GAP/CONN/GCEP/BV-06-C
         # FIXME: No support for sending privacy information to IUT
         # ZTestCase("GAP", "GAP/CONN/GCEP/BV-06-C",
         #           cmds=pre_conditions,
         #           generic_wid_hdl=gap_wid_hdl),
+        # TODO: GAP/CONN/SCEP/BV-01-C
+        # TODO: GAP/CONN/SCEP/BV-03-C
         ZTestCase("GAP", "GAP/CONN/DCEP/BV-01-C",
                   pre_conditions +
                   [TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
@@ -368,6 +378,8 @@ def test_cases(pts):
                   pre_conditions +
                   [TestFunc(btp.gap_conn, start_wid=78),
                    TestFunc(btp.gap_disconn, start_wid=77)]),
+        # TODO: GAP/CONN/DCEP/BV-05-C
+        # TODO: GAP/CONN/DCEP/BV-06-C
         # FIXME: No support for sending privacy information to IUT
         # ZTestCase("GAP", "GAP/CONN/DCEP/BV-06-C",
         #           cmds=pre_conditions,
@@ -399,6 +411,7 @@ def test_cases(pts):
                             start_wid=40),
                    TestFunc(btp.gap_disconn, pts_bd_addr, Addr.le_public,
                             start_wid=77)]),
+        # TODO: GAP/CONN/CPUP/BV-06-C
         ZTestCase("GAP", "GAP/CONN/CPUP/BV-08-C",
                   pre_conditions +
                   [TestFunc(btp.gap_set_conn, start_wid=21),
@@ -607,6 +620,7 @@ def test_cases(pts):
                   [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
                    TestFunc(btp.gap_conn, start_wid=78),
                    TestFunc(btp.gap_disconn, start_wid=44)]),
+        # TODO: GAP/SEC/CSIGN/BV-01-C
         ZTestCase("GAP", "GAP/PRIV/CONN/BV-10-C",
                   edit1_wids={1002: btp.var_store_get_passkey},
                   cmds=pre_conditions +
@@ -651,6 +665,7 @@ def test_cases(pts):
                   cmds=pre_conditions +
                   [TestFunc(btp.gap_set_conn),
                    TestFunc(btp.gap_adv_ind_on, ad)]),
+        # TODO: GAP/ADV/BV-05-C
         ZTestCase("GAP", "GAP/ADV/BV-10-C",
                   cmds=pre_conditions +
                   [TestFunc(btp.gap_set_conn),
@@ -659,6 +674,7 @@ def test_cases(pts):
                   cmds=pre_conditions +
                   [TestFunc(btp.gap_set_conn),
                    TestFunc(btp.gap_adv_ind_on, ad)]),
+        # TODO: GAP/ADV/BV-17-C
         # GAP/GAT/BV-01-C
         # wid: 158 description: IUT support both Central and Peripheral roles.
         # Click Yes if IUT act as Central role to execute this test otherwise
@@ -676,6 +692,7 @@ def test_cases(pts):
                   [TestFunc(btp.gap_set_conn, start_wid=9),
                    TestFunc(btp.gap_adv_ind_on, ad=[AdData.ad_name_sh],
                             start_wid=9)]),
+        # TODO: GAP/GAT/BV-04-C
     ]
 
     return test_cases

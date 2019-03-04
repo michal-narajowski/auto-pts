@@ -130,8 +130,7 @@ def test_cases(ptses):
                   generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/NODE/CFG/HBP/BV-03-C", cmds=pre_conditions,
                   generic_wid_hdl=mesh_wid_hdl),
-        ZTestCase("MESH", "MESH/NODE/CFG/HBP/BV-05-C", cmds=pre_conditions,
-                  generic_wid_hdl=mesh_wid_hdl),
+        # TODO: MESH/NODE/CFG/HBP/BV-04-C
         ZTestCase("MESH", "MESH/NODE/CFG/HBP/BV-06-C", cmds=pre_conditions,
                   generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/NODE/CFG/HBP/BV-07-C", cmds=pre_conditions,
@@ -337,6 +336,7 @@ def test_cases(ptses):
                   generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/NODE/NET/BV-11-C", cmds=pre_conditions,
                   generic_wid_hdl=mesh_wid_hdl),
+        # TODO: MESH/NODE/NET/BV-12-C
         ZTestCase("MESH", "MESH/NODE/NET/BV-13-C", cmds=pre_conditions,
                   generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/NODE/NET/BV-14-C", cmds=pre_conditions,
@@ -375,6 +375,8 @@ def test_cases(ptses):
                   generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/NODE/PROV/UPD/BV-11-C", cmds=pre_conditions,
                   generic_wid_hdl=mesh_wid_hdl),
+        # TODO: MESH/NODE/PROV/UPD/BV-12-C
+        # TODO: MESH/NODE/PROV/UPD/BV-13-C
         ZTestCase("MESH", "MESH/NODE/RLY/BI-01-C", cmds=pre_conditions,
                   generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/NODE/RLY/BI-02-C", cmds=pre_conditions,
@@ -448,8 +450,6 @@ def test_cases(ptses):
                   generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/SR/MPXS/BV-07-C", cmds=pre_conditions,
                   generic_wid_hdl=mesh_wid_hdl),
-        ZTestCase("MESH", "MESH/SR/MPXS/BV-08-C", cmds=pre_conditions,
-                  generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/SR/MPXS/BV-09-C", cmds=pre_conditions +
                   [TestFunc(lambda: get_stack().mesh.proxy_identity_enable())],
                   generic_wid_hdl=mesh_wid_hdl),
@@ -459,6 +459,17 @@ def test_cases(ptses):
 
     if len(ptses) < 2:
         return test_cases, []
+
+    # TODO: MESH/SR/MPXS/BV-08-C
+    # ZTestCase("MESH", "MESH/SR/MPXS/BV-08-C", cmds=pre_conditions,
+    #           generic_wid_hdl=mesh_wid_hdl),
+
+    # TODO: MESH/NODE/CFG/HBP/BV-05-C
+    # ZTestCase("MESH", "MESH/NODE/CFG/HBP/BV-05-C", cmds=pre_conditions,
+    #           generic_wid_hdl=mesh_wid_hdl),
+
+    # TODO: MESH/NODE/CFG/HBS/BV-05-C
+    # TODO: MESH/NODE/CFG/LPNPT/BI-01-C
 
     test_cases += [
         ZTestCase("MESH", "MESH/SR/PROX/BI-01-C", cmds=pre_conditions,
@@ -500,6 +511,7 @@ def test_cases(ptses):
             "MESH", "TSPX_device_uuid", device_uuid2))]
 
     additional_test_cases = [
+        # TODO: MESH/NODE/FRND/FN/*
         ZTestCaseSlave("MESH", "MESH/SR/PROX/BV-02-C-LT2",
                        cmds=pre_conditions_slave +
                        [TestFunc(get_stack().synch.add_synch_element,

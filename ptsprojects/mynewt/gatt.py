@@ -763,6 +763,7 @@ def test_cases_server(pts):
                             Value.long_2),
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
+        # TODO: GATT/SR/GAW/BV-11-C
         ZTestCase("GATT", "GATT/SR/GAW/BI-32-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, PTS_DB.SVC),
@@ -829,6 +830,8 @@ def test_cases_server(pts):
                    TestFunc(sleep, 1, start_wid=98),
                    TestFunc(btp.gatts_set_val, PTS_DB.CHR_READ_ID, '01',
                             start_wid=98)]),
+        # TODO: GATT/SR/UNS/BI-01-C
+        # TODO: GATT/SR/UNS/BI-02-C
     ]
 
     return test_cases
@@ -865,6 +868,7 @@ def test_cases_client(pts):
                    TestFunc(btp.gattc_write_long_rsp, start_wid=69),
                    TestFunc(btp.gap_disconn, pts_bd_addr,
                             Addr.le_public, start_wid=3)]),
+        # TODO: GATT/CL/GAD/BV-01-C
         ZTestCase("GATT", "GATT/CL/GAD/BV-02-C",
                   pre_conditions +
                   [TestFunc(btp.gap_conn, pts_bd_addr,
@@ -993,6 +997,13 @@ def test_cases_client(pts):
                    TestFunc(btp.gap_disconn, pts_bd_addr,
                             Addr.le_public, start_wid=3)],
                   verify_wids={44: btp.verify_description}),
+        # TODO: GATT/CL/GAR/BV-03-C
+        # TODO: GATT/CL/GAR/BI-06-C
+        # TODO: GATT/CL/GAR/BI-07-C
+        # Not supported
+        # TODO: GATT/CL/GAR/BI-09-C
+        # TODO: GATT/CL/GAR/BI-10-C
+        # TODO: GATT/CL/GAR/BI-11-C
         ZTestCase("GATT", "GATT/CL/GAR/BV-04-C",
                   cmds=pre_conditions +
                   [TestFunc(btp.gap_conn, pts_bd_addr,
@@ -1337,6 +1348,7 @@ def test_cases_client(pts):
                    TestFunc(btp.gap_disconn, pts_bd_addr,
                             Addr.le_public, start_wid=3)],
                   verify_wids={65: btp.verify_description}),
+        # TODO: GATT/CL/GAW/BV-06-C
         ZTestCase("GATT", "GATT/CL/GAW/BV-08-C",
                   pre_conditions +
                   [TestFunc(btp.gap_conn, pts_bd_addr,
@@ -1357,6 +1369,7 @@ def test_cases_client(pts):
                    TestFunc(btp.gattc_write_long_rsp, start_wid=76),
                    TestFunc(btp.gap_disconn, pts_bd_addr,
                             Addr.le_public, start_wid=3)]),
+        # TODO: GATT/CL/GAW/BI-32-C
         ZTestCase("GATT", "GATT/CL/GAW/BI-33-C",
                   pre_conditions +
                   [TestFunc(btp.gap_conn, pts_bd_addr,
