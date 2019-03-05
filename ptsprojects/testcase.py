@@ -403,6 +403,7 @@ class TestCase(PTSCallback):
         self.ptsproject_name = ptsproject_name
         self.tc_subproc = None
         self.lf_subproc = None
+        self.wids = set()
 
     def __str__(self):
         """Returns string representation"""
@@ -651,6 +652,8 @@ class TestCase(PTSCallback):
         """Overrides PTSCallback method. Handles
         PTSControl.IPTSImplicitSendCallbackEx.OnImplicitSend"""
         log("%s %s", self, self.on_implicit_send.__name__)
+
+        self.wids.add(wid)
 
         self.join_post_wid_thread()
 
