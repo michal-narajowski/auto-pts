@@ -28,7 +28,7 @@ import Queue
 import threading
 from traceback import format_exception
 from SimpleXMLRPCServer import SimpleXMLRPCServer
-from collections import OrderedDict
+from collections import OrderedDict, defaultdict
 import xml.etree.ElementTree as ET
 import time
 import datetime
@@ -758,7 +758,7 @@ def run_slave_test_case(pts, test_case):
 
 
 def print_summary(status_count, num_test_cases_str, margin,
-                  regressions_count):
+                  regressions_count, used_wids):
     """Prints test case list status summary"""
     print "\nSummary:\n"
 
@@ -802,6 +802,11 @@ def print_summary(status_count, num_test_cases_str, margin,
         print(regressions_str.ljust(status_just) +
               str(regressions_count).rjust(count_just))
 
+    print ""
+    print "WIDs used per project:"
+    for proj_name, wids in used_wids.iteritems():
+        print "%s - %r" % (proj_name, sorted(wids))
+
 
 def get_lt2_test(test_cases, first_tc):
     """ Return lower tester matching test case if exist on list.
@@ -841,6 +846,7 @@ def run_test_cases(ptses, test_cases, additional_test_cases, retries_max=0):
     status_count = {}
     results_dict = {}
     regressions = []
+    used_wids = defaultdict(set)
 
     # estimate execution time
     if TEST_CASE_DB:
@@ -895,6 +901,11 @@ def run_test_cases(ptses, test_cases, additional_test_cases, retries_max=0):
             for pts_thread in pts_threads:
                 pts_thread.join()
 
+            used_wids[test_case.project_name] |= test_case.wids
+            if second_test_case:
+                used_wids[second_test_case.project_name] |= \
+                    second_test_case.wids
+
             run_count -= 1
             if ((test_case.status != 'PASS' or
                  (second_test_case and second_test_case.status != 'PASS')) and
@@ -911,7 +922,8 @@ def run_test_cases(ptses, test_cases, additional_test_cases, retries_max=0):
 
         run_count = run_count_max
 
-    print_summary(status_count, str(num_test_cases), margin, len(regressions))
+    print_summary(status_count, str(num_test_cases), margin, len(regressions),
+                  used_wids)
 
     return status_count, results_dict, regressions
 
