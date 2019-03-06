@@ -125,6 +125,9 @@ def hdl_wid_78(desc):
     return True
 
 
+# TODO: hdl_wid_79
+
+
 def hdl_wid_80(desc):
     stack = get_stack()
 
@@ -141,6 +144,17 @@ def hdl_wid_80(desc):
         sd.append((AdType.manufacturer_data, stack.gap.manufacturer_data))
 
     btp.gap_adv_ind_on(ad=ad, sd=sd)
+    return True
+
+
+# TODO: hdl_wid_82
+# TODO: hdl_wid_84
+def hdl_wid_84(desc):
+    return True
+
+
+# TODO: hdl_wid_89
+def hdl_wid_89(desc):
     return True
 
 
@@ -171,16 +185,13 @@ def hdl_wid_118(desc):
     return True
 
 
+# TODO: hdl_wid_127
+def hdl_wid_127(desc):
+    return True
+
+
 def hdl_wid_130(desc):
     return btp.gatts_verify_write_fail(desc)
-
-
-def hdl_wid_137(desc):
-    return btp.gatts_verify_write_fail(desc)
-
-
-def hdl_wid_141(desc):
-    return btp.gatts_verify_write_success(desc)
 
 
 def hdl_wid_135(desc):
@@ -196,6 +207,10 @@ def hdl_wid_136(desc):
     btp.gatts_set_val(0, '01')
     btp.gatts_start_server()
     return True
+
+
+def hdl_wid_137(desc):
+    return btp.gatts_verify_write_fail(desc)
 
 
 def hdl_wid_138(desc):
@@ -214,6 +229,9 @@ def hdl_wid_157(desc):
     sleep(10)  # Give some time to discover devices
     btp.gap_stop_discov()
     return btp.check_discov_results()
+
+
+# TODO: hdl_wid_159
 
 
 def hdl_wid_161(desc):
