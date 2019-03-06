@@ -35,6 +35,18 @@ from ptsprojects.stack import get_stack
 from ptsprojects.mynewt.gatt_wid import gatt_wid_hdl
 
 
+def hdl_str(hdl):
+    return '{0:x}'.format(hdl, 'x')
+
+
+def u16_hdl_str(hdl):
+    return '{0:04x}'.format(hdl, 'x')
+
+
+def u16_hdl_uc_str(hdl):
+    return '{0:04x}'.format(hdl, 'X')
+
+
 class PTS_DB:
     PTS_UUID_FMT = '0000{}8c26476f89a7a108033a69c7'
     SVC = PTS_UUID_FMT.format('0001')
@@ -69,23 +81,25 @@ class PTS_DB:
     DSC_READ_WRITE_AUTHEN_ID = 12
     CHR_READ_WRITE_ALT_ID = 13
 
-    SVC_HDL = '0016'
-    CHR_NO_PERM_HDL = '0018'
-    CHR_READ_HDL = '001a'
-    CHR_RELIABLE_WRITE_HDL = '001d'
-    CHR_WRITE_NO_RSP_HDL = '001f'
-    CHR_READ_WRITE_HDL = '21'
-    CHR_READ_WRITE_ENC_HDL = '0023'
-    CHR_READ_WRITE_AUTHEN_HDL = '0025'
-    CHR_READ_WRITE_AUTHOR_HDL = '0027'
-    DSC_READ_HDL = '0028'
-    DSC_WRITE_HDL = '0029'
-    DSC_READ_WRITE_HDL = '002a'
-    DSC_READ_WRITE_ENC_HDL = '002b'
-    DSC_READ_WRITE_AUTHEN_HDL = '002c'
-    SVC_END_HDL = '002c'
-    INC_SVC_HDL = '002e'
-    CHR_READ_WRITE_ALT_HDL = '0030'
+    iut_attr_db_off = 26
+
+    SVC_HDL = u16_hdl_str(iut_attr_db_off + 0)
+    CHR_NO_PERM_HDL = u16_hdl_str(iut_attr_db_off + 2)
+    CHR_READ_HDL = u16_hdl_str(iut_attr_db_off + 4)
+    CHR_RELIABLE_WRITE_HDL = u16_hdl_str(iut_attr_db_off + 7)
+    CHR_WRITE_NO_RSP_HDL = u16_hdl_str(iut_attr_db_off + 9)
+    CHR_READ_WRITE_HDL = hdl_str(iut_attr_db_off + 11)
+    CHR_READ_WRITE_ENC_HDL = u16_hdl_str(iut_attr_db_off + 14)
+    CHR_READ_WRITE_AUTHEN_HDL = u16_hdl_str(iut_attr_db_off + 16)
+    CHR_READ_WRITE_AUTHOR_HDL = u16_hdl_str(iut_attr_db_off + 18)
+    DSC_READ_HDL = u16_hdl_str(iut_attr_db_off + 19)
+    DSC_WRITE_HDL = u16_hdl_str(iut_attr_db_off + 20)
+    DSC_READ_WRITE_HDL = u16_hdl_str(iut_attr_db_off + 21)
+    DSC_READ_WRITE_ENC_HDL = u16_hdl_str(iut_attr_db_off + 22)
+    DSC_READ_WRITE_AUTHEN_HDL = u16_hdl_str(iut_attr_db_off + 23)
+    SVC_END_HDL = u16_hdl_str(iut_attr_db_off + 24)
+    INC_SVC_HDL = u16_hdl_str(iut_attr_db_off + 25)
+    CHR_READ_WRITE_ALT_HDL = u16_hdl_str(iut_attr_db_off + 27)
 
 
 class Value:
