@@ -97,7 +97,7 @@ class PTS_DB:
     DSC_READ_WRITE_HDL = u16_hdl_str(iut_attr_db_off + 21)
     DSC_READ_WRITE_ENC_HDL = u16_hdl_str(iut_attr_db_off + 22)
     DSC_READ_WRITE_AUTHEN_HDL = u16_hdl_str(iut_attr_db_off + 23)
-    SVC_END_HDL = u16_hdl_str(iut_attr_db_off + 24)
+    SVC_END_HDL = u16_hdl_str(iut_attr_db_off + 23)
     INC_SVC_HDL = u16_hdl_str(iut_attr_db_off + 25)
     CHR_READ_WRITE_ALT_HDL = u16_hdl_str(iut_attr_db_off + 27)
 
