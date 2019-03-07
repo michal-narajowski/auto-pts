@@ -609,10 +609,8 @@ def test_cases(pts):
                   edit1_wids={1002: btp.var_store_get_passkey,
                               144: gatt.PTS_DB.CHR_READ_WRITE_AUTHEN_HDL},
                   cmds=pre_conditions + init_gatt_db +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
+                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
                    TestFunc(btp.gap_set_conn),
-                   TestFunc(btp.gap_set_io_cap, IOCap.display_only,
-                            start_wid=91, skip_call=(1,)),
                    TestFunc(btp.gap_adv_ind_on, ad=[AdData.ad_name_sh],
                             start_wid=91)]),
         ZTestCase("GAP", "GAP/SEC/AUT/BV-24-C",
