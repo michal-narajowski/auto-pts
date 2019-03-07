@@ -909,12 +909,9 @@ def test_cases_client(pts):
                   pre_conditions +
                   [TestFunc(btp.gap_conn, pts_bd_addr,
                             Addr.le_public, start_wid=2),
-                   # NOTE: We cannot discover all services at first, so we look
-                   # for included at once
                    TestFunc(btp.gattc_find_included,
-                            Addr.le_public, pts_bd_addr, '0001',
-                            'FFFF', start_wid=15),
-                   TestFunc(btp.gattc_find_included_rsp, True, start_wid=15),
+                            Addr.le_public, pts_bd_addr, None,
+                            None, start_wid=15),
                    TestFunc(btp.gap_disconn, pts_bd_addr,
                             Addr.le_public, start_wid=3)],
                   verify_wids={24: btp.verify_description}),
