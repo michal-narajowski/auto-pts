@@ -1099,7 +1099,25 @@ def gatts_start_server():
     iutctl = get_iut()
     iutctl.btp_socket.send(*GATTS['start_server'])
 
-    gatt_command_rsp_succ()
+    tuple_hdr, tuple_data = iutctl.btp_socket.read()
+    logging.debug("received %r %r", tuple_hdr, tuple_data)
+
+    btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT,
+                  defs.GATT_START_SERVER)
+
+    fmt = '<HB'
+    if len(tuple_data[0]) != struct.calcsize(fmt):
+        raise BTPError("Invalid data length")
+
+    db_attr_off, db_attr_cnt = struct.unpack_from(fmt,
+                                                  tuple_data[0])
+
+    logging.debug("%s %d %d", gatts_start_server.__name__,
+                  db_attr_off, db_attr_cnt)
+
+    stack = get_stack()
+    stack.gap.db_attr_off = db_attr_off
+    stack.gap.db_attr_cnt = db_attr_cnt
 
 
 def gatts_set_enc_key_size(hdl, enc_key_size):
