@@ -41,6 +41,8 @@ class Gap:
     def __init__(self, name, manufacturer_data):
         self.name = name
         self.manufacturer_data = manufacturer_data
+        self.db_attr_off = 0
+        self.db_attr_cnt = 0
 
         # If disconnected - None
         # If connected - remote address tuple (addr, addr_type)
