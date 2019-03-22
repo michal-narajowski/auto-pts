@@ -44,14 +44,31 @@ def check_call(cmd, env=None, cwd=None, shell=True):
     return subprocess.check_call(cmd, env=env, cwd=cwd, shell=shell)
 
 
-def _validate_pair(ob):
-    try:
-        if not (len(ob) == 2):
-            raise ValueError
-    except:
-        return False
+def get_tty_path(name):
+    """Returns tty path (eg. /dev/ttyUSB0) of serial device with specified name
+    :param name: device name
+    :return: tty path if device found, otherwise None
+    """
+    serial_devices = {}
+    ls = subprocess.Popen(["ls", "-l", "/dev/serial/by-id"],
+                          stdout=subprocess.PIPE)
 
-    return True
+    awk = subprocess.Popen("awk '{if (NF > 5) print $(NF-2), $NF}'",
+                           stdin=ls.stdout,
+                           stdout=subprocess.PIPE,
+                           shell=True)
+
+    end_of_pipe = awk.stdout
+    for line in end_of_pipe:
+        device, serial = line.decode().rstrip().split(" ")
+        serial_devices[device] = serial
+
+    for device, serial in serial_devices.items():
+        if name in device:
+            tty = os.path.basename(serial)
+            return "/dev/{}".format(tty)
+
+    return None
 
 
 def build_and_flash(project_path, board, overlay=None):
@@ -103,10 +120,50 @@ def build_and_flash(project_path, board, overlay=None):
     check_call('newt load bttester'.split(), cwd=project_path)
 
 
-autopts2board = {
-    None: None,
-    'nrf52': 'nordic_pca10056'
-}
+def get_target_description(project_path):
+    return subprocess.check_output('newt target show bttester', shell=True,
+                                   cwd=project_path)
+
+
+def get_target_config(project_path):
+    return subprocess.check_output('newt target config flat bttester',
+                                   shell=True, cwd=project_path)
+
+
+def get_newt_info(project_path):
+    return subprocess.check_output('newt info',
+                                   shell=True, cwd=project_path)
+
+
+def get_newt_version(project_path):
+    return subprocess.check_output('newt info',
+                                   shell=True, cwd=project_path)
+
+
+def get_build_info_file(project_path):
+    file_name = "build_info.txt"
+    build_info_str = ''
+
+    build_info_str += 'newt info:\n'
+    build_info_str += get_newt_info(project_path)
+    build_info_str += '\n'
+
+    build_info_str += 'newt version:\n'
+    build_info_str += get_newt_version(project_path)
+    build_info_str += '\n'
+
+    build_info_str += 'newt target show:\n'
+    build_info_str += get_target_description(project_path)
+    build_info_str += '\n'
+
+    build_info_str += 'newt target config:\n'
+    build_info_str += get_target_config(project_path)
+    build_info_str += '\n'
+
+    with open(file_name, "w") as text_file:
+        text_file.write(build_info_str)
+
+    return file_name
 
 
 def get_test_cases(ptses):
@@ -136,7 +193,7 @@ def run_tests(args, iut_config):
     status = {}
     descriptions = {}
 
-    tty = '/dev/ttyACM0'
+    tty = get_tty_path("J-Link")
     callback_thread = autoptsclient.init_core()
     test_db_name = "mynewt_" + str(args["board"])
 
@@ -179,7 +236,7 @@ def run_tests(args, iut_config):
             to_run = value['test_cases']
             to_omit = default_to_omit
 
-        build_and_flash(args["project_path"], autopts2board[args["board"]],
+        build_and_flash(args["project_path"], args["board"],
                         overlay)
         time.sleep(1)
 
@@ -219,9 +276,7 @@ def main(cfg):
     print("Mynewt bot start!")
 
     args = cfg['auto_pts']
-    args['kernel_image'] = os.path.join(args['project_path'], 'bin',
-                                        'targets', 'bttester', 'app', 'apps',
-                                        'bttester', 'bttester.elf')
+    args['kernel_image'] = None
 
     core_path = os.path.join(os.path.abspath(args['project_path']), 'repos',
                              'apache-mynewt-core')
@@ -244,11 +299,17 @@ def main(cfg):
                                               descriptions)
     logs_file = bot.common.archive_recursive("logs")
 
+    target_status = bot.common.str2html(get_target_description(
+        os.path.abspath(args['project_path'])))
+
+    build_info_file = get_build_info_file(os.path.abspath(args['project_path']))
+
     if 'gdrive' in cfg:
         drive = bot.common.Drive(cfg['gdrive'])
         url = drive.new_workdir(args['board'])
         drive.upload(report_file)
         drive.upload(logs_file)
+        drive.upload(build_info_file)
         drive.upload("TestCase.db")
 
     if 'mail' in cfg:
@@ -262,8 +323,24 @@ def main(cfg):
                 name + " - " + descriptions.get(name, "no description"))
 
         reg_html = bot.common.regressions2html(_regressions)
-        bot.common.send_mail(cfg['mail'], None, mynewt_hash_status,
-                             args["board"], [summary_html, reg_html, url_html])
+
+        subject = '[Mynewt Nimble] AutoPTS test session results'
+        msg_str = ''.join([summary_html, reg_html, url_html])
+
+        body = '''
+        <p>Hello,</p>
+        <p>Here's summary from Bluetooth test session</p>
+        <h4>1. Setup</h4>
+        <p> {} </p>
+        <p> Target: </p>
+        <p> {} </p>
+        {}
+        <p>Sincerely,</p>
+        <p> {}</p>
+        '''.format(mynewt_hash_status, target_status, msg_str,
+                   cfg['mail']['name'])
+
+        bot.common.send_mail(cfg['mail'], subject, body)
 
     bot.common.cleanup()
 
