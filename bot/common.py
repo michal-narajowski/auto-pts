@@ -82,6 +82,15 @@ def url2html(url, msg):
     return "<a href={}>{}</a>".format(url, msg)
 
 
+def str2html(string):
+    msg = ''
+
+    for line in string.splitlines():
+        msg += "{}<br>\n".format(line)
+
+    return msg
+
+
 def regressions2html(regressions_list=[]):
     """Creates HTML formatted message with regressions
     :param regressions_list: list of regressions found
