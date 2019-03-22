@@ -783,7 +783,6 @@ def test_cases_server(pts):
                             Value.long_2),
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
-        # TODO: GATT/SR/GAW/BV-11-C
         ZTestCase("GATT", "GATT/SR/GAW/BI-32-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, PTS_DB.SVC),

@@ -73,11 +73,14 @@ init_gatt_db = [TestFunc(btp.core_reg_svc_gatt),
 
 iut_device_name = 'Tester'
 iut_manufacturer_data = 'ABCD'
+iut_ad_uri = '162F'
 
 
 class AdData:
     ad_manuf = (AdType.manufacturer_data, 'ABCD')
     ad_name_sh = (AdType.name_short, binascii.hexlify(iut_device_name))
+    ad_tx_pwr = (AdType.tx_power, '00')
+    ad_uri = (AdType.uri, iut_ad_uri)
 
 
 # Advertising data
@@ -108,6 +111,7 @@ def test_cases(pts):
     # Set GAP common PIXIT values
     pts.update_pixit_param("GAP", "TSPX_delete_link_key", "TRUE")
     pts.update_pixit_param("GAP", "TSPX_advertising_data", ad_pixit)
+    pts.update_pixit_param("GAP", "TSPX_URI", iut_ad_uri)
 
     pre_conditions = [
         TestFunc(btp.core_reg_svc_gap),
@@ -299,7 +303,7 @@ def test_cases(pts):
                    TestFunc(btp.gap_set_limdiscov, start_wid=121),
                    TestFunc(btp.gap_adv_ind_on, ad=[AdData.ad_name_sh],
                             start_wid=55)]),
-        # TODO: GAP/CONN/DOCN/BV-01-C
+        # TODO: GAP/CONN/DCON/BV-01-C
         ZTestCase("GAP", "GAP/CONN/UCON/BV-01-C",
                   pre_conditions +
                   [TestFunc(btp.gap_set_conn, start_wid=74),
@@ -620,7 +624,6 @@ def test_cases(pts):
                   [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
                    TestFunc(btp.gap_conn, start_wid=78),
                    TestFunc(btp.gap_disconn, start_wid=44)]),
-        # TODO: GAP/SEC/CSIGN/BV-01-C
         ZTestCase("GAP", "GAP/PRIV/CONN/BV-10-C",
                   edit1_wids={1002: btp.var_store_get_passkey},
                   cmds=pre_conditions +
@@ -665,7 +668,10 @@ def test_cases(pts):
                   cmds=pre_conditions +
                   [TestFunc(btp.gap_set_conn),
                    TestFunc(btp.gap_adv_ind_on, ad)]),
-        # TODO: GAP/ADV/BV-05-C
+        ZTestCase("GAP", "GAP/ADV/BV-05-C",
+                  cmds=pre_conditions +
+                       [TestFunc(btp.gap_set_conn),
+                        TestFunc(btp.gap_adv_ind_on, ad=[AdData.ad_tx_pwr])]),
         ZTestCase("GAP", "GAP/ADV/BV-10-C",
                   cmds=pre_conditions +
                   [TestFunc(btp.gap_set_conn),
@@ -674,7 +680,10 @@ def test_cases(pts):
                   cmds=pre_conditions +
                   [TestFunc(btp.gap_set_conn),
                    TestFunc(btp.gap_adv_ind_on, ad)]),
-        # TODO: GAP/ADV/BV-17-C
+        ZTestCase("GAP", "GAP/ADV/BV-17-C",
+                  cmds=pre_conditions +
+                  [TestFunc(btp.gap_set_conn),
+                   TestFunc(btp.gap_adv_ind_on, ad=[AdData.ad_uri])]),
         # GAP/GAT/BV-01-C
         # wid: 158 description: IUT support both Central and Peripheral roles.
         # Click Yes if IUT act as Central role to execute this test otherwise
@@ -692,7 +701,11 @@ def test_cases(pts):
                   [TestFunc(btp.gap_set_conn, start_wid=9),
                    TestFunc(btp.gap_adv_ind_on, ad=[AdData.ad_name_sh],
                             start_wid=9)]),
-        # TODO: GAP/GAT/BV-04-C
+        ZTestCase("GAP", "GAP/GAT/BV-04-C",
+                  cmds=pre_conditions +
+                  [TestFunc(btp.gap_set_conn, start_wid=91),
+                   TestFunc(btp.gap_adv_ind_on, ad=[AdData.ad_name_sh],
+                            start_wid=91)]),
     ]
 
     return test_cases
