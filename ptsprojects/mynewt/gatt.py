@@ -111,6 +111,36 @@ class Value:
     long_2 = eight_bytes_2 * 4
 
 
+def set_pixits(pts):
+    """Setup GATT profile PIXITS for workspace. Those values are used for test
+    case if not updated within test case.
+
+    PIXITS always should be updated accordingly to project and newest version of
+    PTS.
+
+    pts -- Instance of PyPTS"""
+
+    pts.set_pixit("GATT", "TSPX_bd_addr_iut", "DEADBEEFDEAD")
+    pts.set_pixit("GATT", "TSPX_iut_device_name_in_adv_packet_for_random_address", "")
+    pts.set_pixit("GATT", "TSPX_security_enabled", "FALSE")
+    pts.set_pixit("GATT", "TSPX_delete_link_key", "TRUE")
+    pts.set_pixit("GATT", "TSPX_time_guard", "180000")
+    pts.set_pixit("GATT", "TSPX_selected_handle", "0012")
+    pts.set_pixit("GATT", "TSPX_use_implicit_send", "TRUE")
+    pts.set_pixit("GATT", "TSPX_secure_simple_pairing_pass_key_confirmation", "FALSE")
+    pts.set_pixit("GATT", "TSPX_iut_use_dynamic_bd_addr", "FALSE")
+    pts.set_pixit("GATT", "TSPX_iut_setup_att_over_br_edr", "FALSE")
+    pts.set_pixit("GATT", "TSPX_tester_database_file",
+                  "C:\Program Files\Bluetooth SIG\Bluetooth PTS\Data\SIGDatabase\GATT_Qualification_Test_Databases.xml")
+    pts.set_pixit("GATT", "TSPX_iut_is_client_periphral", "FALSE")
+    pts.set_pixit("GATT", "TSPX_iut_is_server_central", "FALSE")
+    pts.set_pixit("GATT", "TSPX_mtu_size", "23")
+    pts.set_pixit("GATT", "TSPX_pin_code", "0000")
+    pts.set_pixit("GATT", "TSPX_use_dynamic_pin", "FALSE")
+    pts.set_pixit("GATT", "TSPX_delete_ltk", "TRUE")
+    pts.set_pixit("GATT", "TSPX_tester_appearance", "0000")
+
+
 def test_cases_server(pts):
     """Returns a list of GATT Server test cases"""
 
