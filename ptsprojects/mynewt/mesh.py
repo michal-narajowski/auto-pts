@@ -53,7 +53,6 @@ def set_pixits(ptses):
     pts -- Instance of PyPTS"""
 
     pts = ptses[0]
-    pts2 = ptses[1]
 
     pts.set_pixit("MESH", "TSPX_bd_addr_iut", "DEADBEEFDEAD")
     pts.set_pixit("MESH", "TSPX_bd_addr_additional_whitelist", "")
@@ -92,6 +91,11 @@ def set_pixits(ptses):
                   "3216D1509884B533248541792B877F98")
     pts.set_pixit("MESH", "TSPX_device_key",
                   "00000000000000000000000000000000")
+
+    if len(ptses) < 2:
+        return
+
+    pts2 = ptses[1]
 
     # PTS2
     pts2.set_pixit("MESH", "TSPX_bd_addr_iut", "DEADBEEFDEAD")
