@@ -61,8 +61,8 @@ def set_pixits(ptses):
     pts.set_pixit("MESH", "TSPX_tester_database_file",
                   "C:\Program Files\Bluetooth SIG\Bluetooth PTS\Data\SIGDatabase\PTS_SMPP_db.xml")
     pts.set_pixit("MESH", "TSPX_mtu_size", "23")
-    pts.set_pixit("MESH", "TSPX_delete_link_key", "FALSE")
-    pts.set_pixit("MESH", "TSPX_delete_ltk", "FALSE")
+    pts.set_pixit("MESH", "TSPX_delete_link_key", "TRUE")
+    pts.set_pixit("MESH", "TSPX_delete_ltk", "TRUE")
     pts.set_pixit("MESH", "TSPX_security_enabled", "FALSE")
     pts.set_pixit("MESH", "TSPX_iut_setup_att_over_br_edr", "FALSE")
     pts.set_pixit("MESH", "TSPX_scan_interval", "30")
@@ -81,12 +81,12 @@ def set_pixits(ptses):
     pts.set_pixit("MESH", "TSPX_iut_model_id_used", "0002")
     pts.set_pixit("MESH", "TSPX_OOB_code", "00000000000000000102030405060708")
     pts.set_pixit("MESH", "TSPX_subscription_address_list", "C302")
-    pts.set_pixit("MESH", "TSPX_vendor_model_id", "00000000")
-    pts.set_pixit("MESH", "TSPX_maximum_network_message_cache_entries", "2")
+    pts.set_pixit("MESH", "TSPX_vendor_model_id", "FFFF1234")
+    pts.set_pixit("MESH", "TSPX_maximum_network_message_cache_entries", "10")
     pts.set_pixit("MESH", "TSPX_health_valid_test_ids", "00")
     pts.set_pixit("MESH", "TSPX_iut_comp_data_page", "0")
     pts.set_pixit("MESH", "TSPX_netkeyindex_value", "0")
-    pts.set_pixit("MESH", "TSPX_iut_supports_relay", "FALSE")
+    pts.set_pixit("MESH", "TSPX_iut_supports_relay", "TRUE")
     pts.set_pixit("MESH", "TSPX_application_key",
                   "3216D1509884B533248541792B877F98")
     pts.set_pixit("MESH", "TSPX_device_key",
@@ -105,8 +105,8 @@ def set_pixits(ptses):
     pts2.set_pixit("MESH", "TSPX_tester_database_file",
                    "C:\Program Files\Bluetooth SIG\Bluetooth PTS\Data\SIGDatabase\PTS_SMPP_db.xml")
     pts2.set_pixit("MESH", "TSPX_mtu_size", "23")
-    pts2.set_pixit("MESH", "TSPX_delete_link_key", "FALSE")
-    pts2.set_pixit("MESH", "TSPX_delete_ltk", "FALSE")
+    pts2.set_pixit("MESH", "TSPX_delete_link_key", "TRUE")
+    pts2.set_pixit("MESH", "TSPX_delete_ltk", "TRUE")
     pts2.set_pixit("MESH", "TSPX_security_enabled", "FALSE")
     pts2.set_pixit("MESH", "TSPX_iut_setup_att_over_br_edr", "FALSE")
     pts2.set_pixit("MESH", "TSPX_scan_interval", "30")
@@ -125,12 +125,12 @@ def set_pixits(ptses):
     pts2.set_pixit("MESH", "TSPX_iut_model_id_used", "0002")
     pts2.set_pixit("MESH", "TSPX_OOB_code", "00000000000000000102030405060708")
     pts2.set_pixit("MESH", "TSPX_subscription_address_list", "C302")
-    pts2.set_pixit("MESH", "TSPX_vendor_model_id", "00000000")
-    pts2.set_pixit("MESH", "TSPX_maximum_network_message_cache_entries", "2")
+    pts2.set_pixit("MESH", "TSPX_vendor_model_id", "FFFF1234")
+    pts2.set_pixit("MESH", "TSPX_maximum_network_message_cache_entries", "10")
     pts2.set_pixit("MESH", "TSPX_health_valid_test_ids", "00")
     pts2.set_pixit("MESH", "TSPX_iut_comp_data_page", "0")
     pts2.set_pixit("MESH", "TSPX_netkeyindex_value", "0")
-    pts2.set_pixit("MESH", "TSPX_iut_supports_relay", "FALSE")
+    pts2.set_pixit("MESH", "TSPX_iut_supports_relay", "TRUE")
     pts2.set_pixit("MESH", "TSPX_application_key",
                    "3216D1509884B533248541792B877F98")
     pts2.set_pixit("MESH", "TSPX_device_key",
