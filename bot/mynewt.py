@@ -320,19 +320,11 @@ def main(cfg):
     args = cfg['auto_pts']
     args['kernel_image'] = None
 
-    core_path = os.path.join(os.path.abspath(args['project_path']), 'repos',
-                             'apache-mynewt-core')
-    nimble_path = os.path.join(os.path.abspath(args['project_path']), 'repos',
-                               'apache-mynewt-nimble')
-
-    core_hash = \
-        bot.common.update_sources(core_path)
-
-    nimble_hash = \
-        bot.common.update_sources(nimble_path)
+    repos_status = bot.common.update_repos(args['project_path'], cfg["git"])
 
     mynewt_hash_status = 'mynewt-core={}, mynewt-nimble={}'.format(
-        core_hash, nimble_hash)
+        repos_status['apache-mynewt-core'],
+        repos_status['apache-mynewt-nimble'])
 
     summary, results, descriptions, regressions = \
         run_tests(args, cfg.get('iut_config', {}))
