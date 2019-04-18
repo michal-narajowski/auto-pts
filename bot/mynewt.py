@@ -93,7 +93,7 @@ def build_and_flash(project_path, board, overlay=None):
         'newt target set {}_boot bsp=@apache-mynewt-core/hw/bsp/{}'.format(
             board, board).split(), cwd=project_path)
     check_call(
-        'newt target set {}_boot app=@apache-mynewt-core/apps/boot'.format(
+        'newt target set {}_boot app=@mcuboot/boot/mynewt'.format(
             board).split(), cwd=project_path)
 
     check_call(
@@ -111,9 +111,9 @@ def build_and_flash(project_path, board, overlay=None):
     check_call('newt build {}_boot'.format(board).split(), cwd=project_path)
     check_call('newt build bttester'.split(), cwd=project_path)
 
-    check_call('newt create-image {}_boot 0.0.0'.format(board).split(),
+    check_call('newt create-image -2 {}_boot timestamp'.format(board).split(),
                cwd=project_path)
-    check_call('newt create-image bttester 0.0.0'.split(), cwd=project_path)
+    check_call('newt create-image -2 bttester timestamp'.split(), cwd=project_path)
 
     check_call('newt load {}_boot'.format(board).split(), cwd=project_path)
     check_call('newt load bttester'.split(), cwd=project_path)
