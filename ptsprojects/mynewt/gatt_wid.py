@@ -52,10 +52,6 @@ def hdl_wid_17(desc):
         logging.error("%s parsing error", hdl_wid_17.__name__)
         return False
 
-    # Normalize UUIDs
-    pts_services = [hex(int(service, 16)) if len(service) == 4 else
-                    UUID(hex=service).urn[9:] for service in pts_services]
-
     iut_services = []
 
     # Get all primary services
