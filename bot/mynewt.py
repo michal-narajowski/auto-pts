@@ -320,17 +320,18 @@ def main(cfg):
     args = cfg['auto_pts']
     args['kernel_image'] = None
 
-    repos_status = bot.common.update_repos(args['project_path'], cfg["git"])
+    mynewt_hash = bot.common.update_repos(args['project_path'], cfg["git"])
 
     mynewt_hash_status = 'mynewt-core={}, mynewt-nimble={}'.format(
-        repos_status['apache-mynewt-core'],
-        repos_status['apache-mynewt-nimble'])
+        mynewt_hash['apache-mynewt-core']['commit'],
+        mynewt_hash['apache-mynewt-nimble']['commit'])
 
     summary, results, descriptions, regressions = \
         run_tests(args, cfg.get('iut_config', {}))
 
     report_file = bot.common.make_report_xlsx(results, summary, regressions,
                                               descriptions)
+    report_txt = bot.common.make_report_txt(results, mynewt_hash_status)
     logs_file = bot.common.archive_recursive("logs")
 
     build_info_file = get_build_info_file(os.path.abspath(args['project_path']))
@@ -339,6 +340,7 @@ def main(cfg):
         drive = bot.common.Drive(cfg['gdrive'])
         url = drive.new_workdir(args['board'])
         drive.upload(report_file)
+        drive.upload(report_txt)
         drive.upload(logs_file)
         drive.upload(build_info_file)
         drive.upload("TestCase.db")
@@ -367,7 +369,8 @@ def main(cfg):
                                      reg_html, log_url_html,
                                      cfg['mail']['name'])
 
-        bot.common.send_mail(cfg['mail'], subject, body)
+        bot.common.send_mail(cfg['mail'], subject, body,
+                             [report_file, report_txt])
 
         print("Done")
 
