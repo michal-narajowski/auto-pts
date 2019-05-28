@@ -167,6 +167,15 @@ def get_build_info_file(project_path):
     return file_name
 
 
+def make_repo_status(repos_info):
+    status_list = []
+
+    for name, info in repos_info.items():
+        status_list.append('{}={}'.format(name, info['commit']))
+
+    return ', '.join(status_list)
+
+
 def get_test_cases(ptses):
     """Get all test cases
     :param pts: PTS proxy instance
@@ -320,18 +329,15 @@ def main(cfg):
     args = cfg['auto_pts']
     args['kernel_image'] = None
 
-    mynewt_hash = bot.common.update_repos(args['project_path'], cfg["git"])
-
-    mynewt_hash_status = 'mynewt-core={}, mynewt-nimble={}'.format(
-        mynewt_hash['apache-mynewt-core']['commit'],
-        mynewt_hash['apache-mynewt-nimble']['commit'])
+    repos_info = bot.common.update_repos(args['project_path'], cfg["git"])
+    repo_status = make_repo_status(repos_info)
 
     summary, results, descriptions, regressions = \
         run_tests(args, cfg.get('iut_config', {}))
 
     report_file = bot.common.make_report_xlsx(results, summary, regressions,
                                               descriptions)
-    report_txt = bot.common.make_report_txt(results, mynewt_hash_status)
+    report_txt = bot.common.make_report_txt(results, repo_status)
     logs_file = bot.common.archive_recursive("logs")
 
     build_info_file = get_build_info_file(os.path.abspath(args['project_path']))
@@ -365,7 +371,7 @@ def main(cfg):
         else:
             log_url_html = "Not Available"
 
-        subject, body = compose_mail(args, mynewt_hash_status, summary_html,
+        subject, body = compose_mail(args, repo_status, summary_html,
                                      reg_html, log_url_html,
                                      cfg['mail']['name'])
 
