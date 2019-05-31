@@ -118,8 +118,6 @@ def build_and_flash(project_path, board, overlay=None):
     check_call('newt load {}_boot'.format(board).split(), cwd=project_path)
     check_call('newt load bttester'.split(), cwd=project_path)
 
-    return get_tty_path("J-Link")
-
 
 def get_target_description(project_path):
     return subprocess.check_output('newt target show bttester', shell=True,
@@ -227,7 +225,7 @@ def run_tests(args, iut_config):
     stack_inst = stack.get_stack()
     stack_inst.synch_init(callback_thread.set_pending_response,
                           callback_thread.clear_pending_responses)
-    cache = autoptsclient.cache_workspace(pts)
+    # cache = autoptsclient.cache_workspace(pts)
 
     default_to_omit = []
 
@@ -249,8 +247,9 @@ def run_tests(args, iut_config):
             to_run = value['test_cases']
             to_omit = default_to_omit
 
-        tty = build_and_flash(args["project_path"], args["board"],
-                              overlay)
+        # tty = build_and_flash(args["project_path"], args["board"],
+        #                       overlay)
+        tty = get_tty_path("J-Link")
         logging.debug("TTY path: %s" % tty)
 
         time.sleep(10)
@@ -282,11 +281,11 @@ def run_tests(args, iut_config):
         results.update(results_dict)
         autoprojects.iutctl.cleanup()
 
-    for test_case_name in results.keys():
-        descriptions[test_case_name] = \
-            autoptsclient.get_test_case_description(cache, test_case_name)
+    # for test_case_name in results.keys():
+    #     descriptions[test_case_name] = \
+    #         autoptsclient.get_test_case_description(cache, test_case_name)
 
-    autoptsclient.cache_cleanup(cache)
+    # autoptsclient.cache_cleanup(cache)
 
     pts.unregister_xmlrpc_ptscallback()
 
@@ -329,56 +328,56 @@ def main(cfg):
     args = cfg['auto_pts']
     args['kernel_image'] = None
 
-    repos_info = bot.common.update_repos(args['project_path'], cfg["git"])
-    repo_status = make_repo_status(repos_info)
+    # repos_info = bot.common.update_repos(args['project_path'], cfg["git"])
+    # repo_status = make_repo_status(repos_info)
 
     summary, results, descriptions, regressions = \
         run_tests(args, cfg.get('iut_config', {}))
 
-    report_file = bot.common.make_report_xlsx(results, summary, regressions,
-                                              descriptions)
-    report_txt = bot.common.make_report_txt(results, repo_status)
-    logs_file = bot.common.archive_recursive("logs")
+    # report_file = bot.common.make_report_xlsx(results, summary, regressions,
+    #                                           descriptions)
+    # report_txt = bot.common.make_report_txt(results, repo_status)
+    # logs_file = bot.common.archive_recursive("logs")
 
-    build_info_file = get_build_info_file(os.path.abspath(args['project_path']))
+    # build_info_file = get_build_info_file(os.path.abspath(args['project_path']))
 
-    if 'gdrive' in cfg:
-        drive = bot.common.Drive(cfg['gdrive'])
-        url = drive.new_workdir(args['board'])
-        drive.upload(report_file)
-        drive.upload(report_txt)
-        drive.upload(logs_file)
-        drive.upload(build_info_file)
-        drive.upload("TestCase.db")
+    # if 'gdrive' in cfg:
+    #     drive = bot.common.Drive(cfg['gdrive'])
+    #     url = drive.new_workdir(args['board'])
+    #     drive.upload(report_file)
+    #     drive.upload(report_txt)
+    #     drive.upload(logs_file)
+    #     drive.upload(build_info_file)
+    #     drive.upload("TestCase.db")
 
-    if 'mail' in cfg:
-        print("Sending email ...")
+    # if 'mail' in cfg:
+    #     print("Sending email ...")
 
-        # Summary
-        summary_html = bot.common.status_dict2summary_html(summary)
+    #     # Summary
+    #     summary_html = bot.common.status_dict2summary_html(summary)
 
-        # Provide test case description
-        _regressions = []
-        for name in regressions:
-            _regressions.append(
-                name + " - " + descriptions.get(name, "no description"))
+    #     # Provide test case description
+    #     _regressions = []
+    #     for name in regressions:
+    #         _regressions.append(
+    #             name + " - " + descriptions.get(name, "no description"))
 
-        reg_html = bot.common.regressions2html(_regressions)
+    #     reg_html = bot.common.regressions2html(_regressions)
 
-        # Log in Google drive in HTML format
-        if 'gdrive' in cfg:
-            log_url_html = bot.common.url2html(url, "Results on Google Drive")
-        else:
-            log_url_html = "Not Available"
+    #     # Log in Google drive in HTML format
+    #     if 'gdrive' in cfg:
+    #         log_url_html = bot.common.url2html(url, "Results on Google Drive")
+    #     else:
+    #         log_url_html = "Not Available"
 
-        subject, body = compose_mail(args, repo_status, summary_html,
-                                     reg_html, log_url_html,
-                                     cfg['mail']['name'])
+    #     subject, body = compose_mail(args, repo_status, summary_html,
+    #                                  reg_html, log_url_html,
+    #                                  cfg['mail']['name'])
 
-        bot.common.send_mail(cfg['mail'], subject, body,
-                             [report_file, report_txt])
+    #     bot.common.send_mail(cfg['mail'], subject, body,
+    #                          [report_file, report_txt])
 
-        print("Done")
+    #     print("Done")
 
     bot.common.cleanup()
 
