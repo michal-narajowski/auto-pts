@@ -31,7 +31,7 @@ except ImportError:  # running this module as script
 from pybtp import btp
 from pybtp.types import Addr
 from ptsprojects.stack import get_stack
-from ptsprojects.zephyr.l2cap_wid import l2cap_wid_hdl
+from ptsprojects.mynewt.l2cap_wid import l2cap_wid_hdl
 
 
 le_psm = 128
@@ -181,7 +181,8 @@ def test_cases(pts):
                   pre_conditions,
                   generic_wid_hdl=l2cap_wid_hdl),
         ZTestCase("L2CAP", "L2CAP/LE/CFC/BV-06-C",
-                  pre_conditions,
+                  pre_conditions +
+                  [TestFunc(lambda: stack.l2cap.set_send_data("FF" * 10))],
                   generic_wid_hdl=l2cap_wid_hdl),
         ZTestCase("L2CAP", "L2CAP/LE/CFC/BV-07-C",
                   pre_conditions,

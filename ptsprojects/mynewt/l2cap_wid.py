@@ -179,7 +179,7 @@ def hdl_wid_43(desc):
     """
     stack = get_stack()
 
-    btp.l2cap_send_data(0, "FF", 40)
+    btp.l2cap_send_data(0, stack.l2cap.get_send_data())
 
     return True
 
