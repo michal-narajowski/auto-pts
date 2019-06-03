@@ -1319,9 +1319,7 @@ def gattc_disc_prim_svcs_rsp():
     VERIFY_VALUES = []
 
     for svc in svcs_tuple:
-        start_handle = svc[0]
-        end_handle = svc[1]
-        VERIFY_VALUES.append((start_handle, end_handle))
+        VERIFY_VALUES.append(svc[2])
 
 
 def gattc_disc_prim_uuid(bd_addr_type, bd_addr, uuid):
@@ -2266,6 +2264,7 @@ att_rsp_str = {0:   "",
                5:   "authentication error",
                7:   "Invalid offset error",
                8:   "authorization error",
+               10:  "attribute not found",
                12:  "encryption key size error",
                13:  "Invalid attribute value length error",
                14:  "unlikely error",
