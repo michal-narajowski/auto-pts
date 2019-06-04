@@ -1474,7 +1474,18 @@ def test_cases_client(pts):
                    TestFunc(btp.gap_disconn, pts_bd_addr,
                             Addr.le_public, start_wid=3)],
                   verify_wids={65: btp.verify_description}),
-        # TODO: GATT/CL/GAW/BV-06-C
+        ZTestCase("GATT", "GATT/CL/GAW/BV-06-C",
+                  pre_conditions +
+                  [TestFunc(btp.gap_conn, pts_bd_addr,
+                            Addr.le_public, start_wid=2),
+                   TestFunc(btp.gattc_write_reliable, Addr.le_public,
+                            pts_bd_addr, MMI.arg_1, 0, 'ff',
+                            MMI.arg_2, start_wid=76),
+                   TestFunc(btp.gattc_write_reliable_rsp,
+                            store_rsp=True, start_wid=76),
+                   TestFunc((lambda: True), start_wid=82),
+                   TestFunc(btp.gap_disconn, pts_bd_addr,
+                            Addr.le_public, start_wid=3)]),
         ZTestCase("GATT", "GATT/CL/GAW/BV-08-C",
                   pre_conditions +
                   [TestFunc(btp.gap_conn, pts_bd_addr,
@@ -1495,7 +1506,18 @@ def test_cases_client(pts):
                    TestFunc(btp.gattc_write_long_rsp, start_wid=76),
                    TestFunc(btp.gap_disconn, pts_bd_addr,
                             Addr.le_public, start_wid=3)]),
-        # TODO: GATT/CL/GAW/BI-32-C
+        ZTestCase("GATT", "GATT/CL/GAW/BI-32-C",
+                  pre_conditions +
+                  [TestFunc(btp.gap_conn, pts_bd_addr,
+                            Addr.le_public, start_wid=2),
+                   TestFunc(btp.gattc_write_reliable, Addr.le_public,
+                            pts_bd_addr, MMI.arg_1, 0, 'ff',
+                            MMI.arg_2, start_wid=76),
+                   TestFunc(btp.gattc_write_reliable_rsp,
+                            store_rsp=True, start_wid=76),
+                   TestFunc((lambda: True), start_wid=82),
+                   TestFunc(btp.gap_disconn, pts_bd_addr,
+                            Addr.le_public, start_wid=3)]),
         ZTestCase("GATT", "GATT/CL/GAW/BI-33-C",
                   pre_conditions +
                   [TestFunc(btp.gap_conn, pts_bd_addr,
