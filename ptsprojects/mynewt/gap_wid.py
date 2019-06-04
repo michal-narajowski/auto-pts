@@ -125,7 +125,22 @@ def hdl_wid_78(desc):
     return True
 
 
-# TODO: hdl_wid_79
+def hdl_wid_79(desc):
+    stack = get_stack()
+
+    ad = []
+    sd = []
+
+    btp.gap_set_nonconn()
+
+    if stack.gap.name:
+        ad.append((AdType.name_short, hexlify(stack.gap.name)))
+
+    if stack.gap.manufacturer_data:
+        sd.append((AdType.manufacturer_data, stack.gap.manufacturer_data))
+
+    btp.gap_adv_ind_on(ad=ad, sd=sd)
+    return True
 
 
 def hdl_wid_80(desc):
@@ -155,6 +170,24 @@ def hdl_wid_84(desc):
 
 # TODO: hdl_wid_89
 def hdl_wid_89(desc):
+    return True
+
+
+def hdl_wid_90(desc):
+    stack = get_stack()
+
+    ad = []
+    sd = []
+
+    btp.gap_set_conn()
+
+    if stack.gap.name:
+        ad.append((AdType.name_short, hexlify(stack.gap.name)))
+
+    if stack.gap.manufacturer_data:
+        sd.append((AdType.manufacturer_data, stack.gap.manufacturer_data))
+
+    btp.gap_adv_ind_on(ad=ad, sd=sd)
     return True
 
 
@@ -290,6 +323,10 @@ def hdl_wid_177(desc):
 
 
 def hdl_wid_178(desc):
+    return True
+
+
+def hdl_wid_179(desc):
     return True
 
 
