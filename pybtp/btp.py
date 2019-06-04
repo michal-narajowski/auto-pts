@@ -1321,6 +1321,8 @@ def gattc_disc_prim_svcs_rsp():
     for svc in svcs_tuple:
         VERIFY_VALUES.append(svc[2])
 
+    return svcs_tuple
+
 
 def gattc_disc_prim_uuid(bd_addr_type, bd_addr, uuid):
     logging.debug("%s %r %r %r", gattc_disc_prim_uuid.__name__, bd_addr_type,
@@ -1404,15 +1406,12 @@ def gattc_find_included(bd_addr_type, bd_addr, start_hdl=None, end_hdl=None):
         return
 
     gattc_disc_prim_svcs(bd_addr_type, bd_addr)
-    gattc_disc_prim_svcs_rsp()
+    svcs_tuple = gattc_disc_prim_svcs_rsp()
 
     global VERIFY_VALUES
+    VERIFY_VALUES = []
 
-    svcs = VERIFY_VALUES
-
-    for start, end in svcs:
-        VERIFY_VALUES = []
-
+    for start, end, _ in svcs_tuple:
         _gattc_find_included_req(bd_addr_type, bd_addr, start, end)
         _gattc_find_included_rsp()
 

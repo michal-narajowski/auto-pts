@@ -933,8 +933,7 @@ def test_cases_client(pts):
                    TestFunc(btp.gattc_disc_prim_svcs_rsp, start_wid=10),
                    TestFunc(btp.gap_disconn, pts_bd_addr,
                             Addr.le_public, start_wid=3)],
-                  verify_wids={17: btp.verify_description,
-                               11: btp.verify_description}),
+                  verify_wids={17: btp.verify_description}),
         ZTestCase("GATT", "GATT/CL/GAD/BV-02-C",
                   pre_conditions +
                   [TestFunc(btp.gap_conn, pts_bd_addr,
