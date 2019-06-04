@@ -167,7 +167,7 @@ def set_pixits(pts):
     pts.set_pixit("GAP", "TSPX_tester_device_IRK_for_resolvable_privacy_address_generation_procedure",
                   "0123456789ABCDEF0123456789ABCDEF")
     pts.set_pixit("GAP",
-                  "TSPX_iut_device_name_in_adv_packet_for_random_address", "")
+                  "TSPX_iut_device_name_in_adv_packet_for_random_address", iut_device_name)
     pts.set_pixit("GAP", "TSPX_Tgap_104", "60000")
     pts.set_pixit("GAP", "TSPX_URI", "162F2F7777772E626C7565746F6F74682E636F6D")
 
@@ -188,19 +188,12 @@ def test_cases(pts):
         TestFunc(lambda: pts.update_pixit_param(
             "GAP", "TSPX_bd_addr_iut",
             stack.gap.iut_addr_get_str())),
-        TestFunc(pts.update_pixit_param, "GAP",
-                 "TSPX_iut_device_name_in_adv_packet_for_random_address",
-                 iut_device_name),
-        TestFunc(lambda: pts.update_pixit_param(
-            "GAP", "TSPX_bd_addr_PTS",
-            pts_bd_addr.replace(':', ''))),
+        # TestFunc(lambda: pts.update_pixit_param(
+        #     "GAP", "TSPX_bd_addr_PTS",
+        #     pts_bd_addr.replace(':', ''))),
         TestFunc(pts.update_pixit_param, "GAP",
                  "TSPX_iut_private_address_interval",
                  '10000'),
-        TestFunc(lambda: pts.update_pixit_param(
-            "GAP",
-            "TSPX_iut_device_IRK_for_resolvable_privacy_address_generation_procedure",
-            "11111111111111111111111111111111")),
         TestFunc(lambda: pts.update_pixit_param("GAP", "TSPX_URI", iut_ad_uri)),
         TestFunc(lambda: pts.update_pixit_param(
             "GAP", "TSPX_iut_privacy_enabled",
@@ -208,9 +201,6 @@ def test_cases(pts):
         TestFunc(lambda: pts.update_pixit_param(
             "GAP", "TSPX_using_public_device_address",
             "FALSE" if stack.gap.iut_addr_is_random() else "TRUE")),
-        TestFunc(lambda: pts.update_pixit_param(
-            "GAP", "TSPX_using_private_device_address",
-            "TRUE" if stack.gap.iut_addr_is_random() else "FALSE")),
         TestFunc(lambda: pts.update_pixit_param(
             "GAP", "TSPX_using_random_device_address",
             "TRUE" if stack.gap.iut_addr_is_random() else "FALSE")),
@@ -231,7 +221,9 @@ def test_cases(pts):
                   cmds=pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
                   generic_wid_hdl=gap_wid_hdl),
-        # TODO: GAP/BROB/BCST/BV-04-C
+        ZTestCase("GAP", "GAP/BROB/BCST/BV-04-C",
+                  cmds=pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
         # TODO: GAP/BROB/BCST/BV-05-C
         ZTestCase("GAP", "GAP/BROB/OBSV/BV-01-C",
                   cmds=pre_conditions,
@@ -363,7 +355,9 @@ def test_cases(pts):
                    TestFunc(btp.gap_set_limdiscov, start_wid=121),
                    TestFunc(btp.gap_adv_ind_on, ad=[AdData.ad_name_sh],
                             start_wid=55)]),
-        # TODO: GAP/CONN/DCON/BV-01-C
+        ZTestCase("GAP", "GAP/CONN/DCON/BV-01-C",
+                  cmds=pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/CONN/UCON/BV-01-C",
                   pre_conditions +
                   [TestFunc(btp.gap_set_conn, start_wid=74),
@@ -385,7 +379,11 @@ def test_cases(pts):
         ZTestCase("GAP", "GAP/CONN/UCON/BV-06-C",
                   edit1_wids={1002: btp.var_store_get_passkey},
                   cmds=pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
+                  [TestFunc(lambda: pts.update_pixit_param(
+                      "GAP",
+                      "TSPX_iut_device_IRK_for_resolvable_privacy_address_generation_procedure",
+                      "11111111111111111111111111111111")),
+                   TestFunc(btp.gap_set_io_cap, IOCap.display_only),
                    TestFunc(btp.gap_set_conn),
                    TestFunc(btp.gap_set_gendiscov),
                    TestFunc(btp.gap_adv_ind_on, ad=[AdData.ad_name_sh],
@@ -407,13 +405,15 @@ def test_cases(pts):
                             start_wid=78),
                    TestFunc(btp.gap_disconn, pts_bd_addr, Addr.le_public,
                             start_wid=77)]),
-        # TODO: GAP/CONN/ACEP/BV-02-C
-        # TODO: GAP/CONN/ACEP/BV-03-C
-        # TODO: GAP/CONN/ACEP/BV-04-C
-        # FIXME: No support for sending privacy information to IUT
-        # ZTestCase("GAP", "GAP/CONN/ACEP/BV-04-C",
-        #           cmds=pre_conditions,
-        #           generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/CONN/ACEP/BV-02-C",
+                  cmds=pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/CONN/ACEP/BV-03-C",
+                  cmds=pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/CONN/ACEP/BV-04-C",
+                  cmds=pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/CONN/GCEP/BV-01-C",
                   pre_conditions +
                   [TestFunc(btp.gap_conn, start_wid=78),
@@ -424,14 +424,18 @@ def test_cases(pts):
                             start_wid=78),
                    TestFunc(btp.gap_disconn, pts_bd_addr, Addr.le_public,
                             start_wid=77)]),
-        # TODO: GAP/CONN/GCEP/BV-05-C
-        # TODO: GAP/CONN/GCEP/BV-06-C
-        # FIXME: No support for sending privacy information to IUT
-        # ZTestCase("GAP", "GAP/CONN/GCEP/BV-06-C",
-        #           cmds=pre_conditions,
-        #           generic_wid_hdl=gap_wid_hdl),
-        # TODO: GAP/CONN/SCEP/BV-01-C
-        # TODO: GAP/CONN/SCEP/BV-03-C
+        ZTestCase("GAP", "GAP/CONN/GCEP/BV-05-C",
+                  cmds=pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/CONN/GCEP/BV-06-C",
+                  cmds=pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/CONN/SCEP/BV-01-C",
+                  cmds=pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/CONN/SCEP/BV-03-C",
+                  cmds=pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/CONN/DCEP/BV-01-C",
                   pre_conditions +
                   [TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
@@ -442,12 +446,12 @@ def test_cases(pts):
                   pre_conditions +
                   [TestFunc(btp.gap_conn, start_wid=78),
                    TestFunc(btp.gap_disconn, start_wid=77)]),
-        # TODO: GAP/CONN/DCEP/BV-05-C
-        # TODO: GAP/CONN/DCEP/BV-06-C
-        # FIXME: No support for sending privacy information to IUT
-        # ZTestCase("GAP", "GAP/CONN/DCEP/BV-06-C",
-        #           cmds=pre_conditions,
-        #           generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/CONN/DCEP/BV-05-C",
+                  cmds=pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/CONN/DCEP/BV-06-C",
+                  cmds=pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/CONN/CPUP/BV-01-C",
                   pre_conditions +
                   [TestFunc(btp.gap_set_conn, start_wid=21),
@@ -706,6 +710,10 @@ def test_cases(pts):
                   # Establishment procedure since the resolvable private
                   # address is incorrect.
                   verify_wids={148: btp.verify_not_connected}),
+        ZTestCase("GAP", "GAP/PRIV/CONN/BI-01-C",
+                  cmds=pre_conditions +
+                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/ADV/BV-01-C",
                   cmds=pre_conditions +
                   [TestFunc(btp.gap_set_conn),
