@@ -116,6 +116,7 @@ def hdl_wid_47(desc):
 
 
 def hdl_wid_77(desc):
+    sleep(2)
     btp.gap_disconn()
     return True
 
