@@ -548,6 +548,12 @@ def test_cases(ptses):
                   generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/SR/MPXS/BV-07-C", cmds=pre_conditions,
                   generic_wid_hdl=mesh_wid_hdl),
+        ZTestCase("MESH", "MESH/SR/MPXS/BV-08-C", cmds=pre_conditions +
+                  [TestFunc(lambda: pts.update_pixit_param(
+                      "MESH", "TSPX_device_uuid", device_uuid2)),
+                   TestFunc(lambda: pts.update_pixit_param(
+                       "MESH", "TSPX_device_uuid2", device_uuid))],
+                  generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/SR/MPXS/BV-09-C", cmds=pre_conditions +
                   [TestFunc(lambda: get_stack().mesh.proxy_identity_enable())],
                   generic_wid_hdl=mesh_wid_hdl),
@@ -557,10 +563,6 @@ def test_cases(ptses):
 
     if len(ptses) < 2:
         return test_cases, []
-
-    # TODO: MESH/SR/MPXS/BV-08-C
-    # ZTestCase("MESH", "MESH/SR/MPXS/BV-08-C", cmds=pre_conditions,
-    #           generic_wid_hdl=mesh_wid_hdl),
 
     # TODO: MESH/NODE/CFG/HBP/BV-05-C
     # ZTestCase("MESH", "MESH/NODE/CFG/HBP/BV-05-C", cmds=pre_conditions,
@@ -609,6 +611,16 @@ def test_cases(ptses):
 
     additional_test_cases = [
         # TODO: MESH/NODE/FRND/FN/*
+        ZTestCaseSlave("MESH", "MESH/SR/MPXS/BV-08-C-LT2",
+                       cmds=pre_conditions_slave +
+                            [TestFunc(lambda: pts2.update_pixit_param(
+                                "MESH", "TSPX_device_uuid", device_uuid)),
+                             TestFunc(lambda: pts2.update_pixit_param(
+                                 "MESH", "TSPX_device_uuid2", device_uuid2)),
+                             TestFunc(get_stack().synch.add_synch_element,
+                                      (("MESH/SR/MPXS/BV-08-C", 12),
+                                       ("MESH/SR/MPXS/BV-08-C-LT2", 13)))],
+                       generic_wid_hdl=mesh_wid_hdl),
         ZTestCaseSlave("MESH", "MESH/SR/PROX/BV-02-C-LT2",
                        cmds=pre_conditions_slave +
                        [TestFunc(get_stack().synch.add_synch_element,
