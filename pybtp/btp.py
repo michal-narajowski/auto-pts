@@ -2795,7 +2795,6 @@ def mesh_reset():
     stack = get_stack()
 
     stack.mesh.is_provisioned.data = False
-    stack.mesh.is_initialized = False
 
 
 def mesh_input_number(number):
