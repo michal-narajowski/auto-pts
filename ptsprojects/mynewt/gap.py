@@ -500,6 +500,7 @@ def test_cases(pts):
                    TestFunc(btp.gap_set_conn, start_wid=91),
                    TestFunc(btp.gap_adv_ind_on, ad=[AdData.ad_name_sh],
                             start_wid=91),
+                   TestFunc(sleep, 2, start_wid=77),
                    TestFunc(btp.gap_disconn, start_wid=77)]),
         ZTestCase("GAP", "GAP/CONN/PRDA/BV-02-C",
                   edit1_wids={1002: (btp.var_store_get_passkey)},
