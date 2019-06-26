@@ -661,6 +661,10 @@ def hdl_wid_103(desc):
     return True
 
 
+def hdl_wid_104(desc):
+    return True
+
+
 def hdl_wid_201(desc):
     """
     Implements: IUT_GENERATE_SECURE_NETWORK_BEACON
