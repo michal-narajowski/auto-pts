@@ -377,28 +377,9 @@ def test_cases(pts):
                    TestFunc(btp.gap_adv_ind_on, ad=[AdData.ad_name_sh],
                             start_wid=76)]),
         ZTestCase("GAP", "GAP/CONN/UCON/BV-06-C",
-                  edit1_wids={1002: btp.var_store_get_passkey},
                   cmds=pre_conditions +
-                  [TestFunc(lambda: pts.update_pixit_param(
-                      "GAP",
-                      "TSPX_iut_device_IRK_for_resolvable_privacy_address_generation_procedure",
-                      "11111111111111111111111111111111")),
-                   TestFunc(btp.gap_set_io_cap, IOCap.display_only),
-                   TestFunc(btp.gap_set_conn),
-                   TestFunc(btp.gap_set_gendiscov),
-                   TestFunc(btp.gap_adv_ind_on, ad=[AdData.ad_name_sh],
-                            start_wid=91),
-                   TestFunc(btp.gap_wait_for_connection, start_wid=91),
-                   TestFunc(btp.gap_disconn, start_wid=77),
-
-                   # Apparently PTS don't take into account value of
-                   # TSPX_iut_private_address_interval, so let's simulate
-                   # change of RPA
-                   TestFunc(btp.gap_adv_off, start_wid=90),
-                   TestFunc(btp.gap_read_ctrl_info, start_wid=90),
-                   TestFunc(btp.gap_set_gendiscov, start_wid=90),
-                   TestFunc(btp.gap_adv_ind_on, ad=[AdData.ad_name_sh],
-                            start_wid=90)]),
+                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/CONN/ACEP/BV-01-C",
                   pre_conditions +
                   [TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
