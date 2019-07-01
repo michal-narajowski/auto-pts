@@ -153,6 +153,19 @@ def hdl_wid_26(desc):
     return True
 
 
+def hdl_wid_27(desc):
+    stack = get_stack()
+
+    ad =[]
+
+    if stack.gap.manufacturer_data:
+        ad.append((AdType.tx_power, 00))
+
+    btp.gap_adv_ind_on(ad=ad)
+
+    return True
+
+
 def hdl_wid_35(desc):
     stack = get_stack()
 
@@ -305,6 +318,7 @@ def hdl_wid_72(desc):
 
     ad = []
 
+    btp.gap_set_conn()
     btp.gap_set_nondiscov()
 
     if stack.gap.name:
@@ -341,7 +355,7 @@ def hdl_wid_76(desc):
 
 
 def hdl_wid_77(desc):
-    sleep(2)
+    # sleep(2)
     btp.gap_disconn()
     return True
 
@@ -705,6 +719,19 @@ def hdl_wid_169(desc):
     return True
 
 
+def hdl_wid_173(desc):
+    stack = get_stack()
+
+    ad =[]
+
+    if stack.gap.uri:
+        ad.append((AdType.uri, stack.gap.uri))
+
+    btp.gap_adv_ind_on(ad=ad)
+
+    return True
+
+
 def hdl_wid_174(desc):
     btp.gap_rpa_conn(desc)
     return True
@@ -730,7 +757,7 @@ def hdl_wid_204(desc):
     btp.gap_start_discov(type='passive', mode='observe')
     sleep(10)
     btp.gap_stop_discov()
-    return btp.check_discov_results()
+    return btp.check_discov_results(addr_type=0x02)
 
 
 def hdl_wid_1002(desc):
