@@ -244,6 +244,7 @@ def hdl_wid_51(desc):
 
     ad = []
 
+    btp.gap_set_conn()
     btp.gap_set_gendiscov()
 
     if stack.gap.name:
