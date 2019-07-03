@@ -275,6 +275,7 @@ def hdl_wid_55(desc):
 
     ad = []
 
+    btp.gap_set_conn()
     btp.gap_set_limdiscov()
 
     if stack.gap.name:
@@ -340,6 +341,7 @@ def hdl_wid_75(desc):
 
     ad = []
 
+    btp.gap_set_conn()
     btp.gap_set_gendiscov()
 
     if stack.gap.name:
@@ -432,10 +434,6 @@ def hdl_wid_90(desc):
     if stack.gap.manufacturer_data:
         sd.append((AdType.manufacturer_data, stack.gap.manufacturer_data))
 
-    btp.gap_adv_off()
-    btp.gap_read_ctrl_info()
-    btp.gap_set_conn()
-    btp.gap_set_gendiscov()
     btp.gap_adv_ind_on(ad=ad, sd=sd)
     return True
 
