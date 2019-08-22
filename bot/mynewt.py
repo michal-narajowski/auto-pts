@@ -14,7 +14,7 @@
 # FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
 # more details.
 #
-
+import datetime
 import logging
 import os
 import subprocess
@@ -118,6 +118,8 @@ def build_and_flash(project_path, board, overlay=None):
     check_call('newt load {}_boot'.format(board).split(), cwd=project_path)
     check_call('newt load bttester'.split(), cwd=project_path)
 
+    return get_tty_path("J-Link")
+
 
 def get_target_description(project_path):
     return subprocess.check_output('newt target show bttester', shell=True,
@@ -183,12 +185,25 @@ def get_test_cases(ptses):
     test_cases += autoprojects.gatt.test_cases(ptses[0])
     test_cases += autoprojects.sm.test_cases(ptses[0])
     test_cases += autoprojects.l2cap.test_cases(ptses[0])
-    mesh_test_cases, additional_mesh_test_cases = \
-        autoprojects.mesh.test_cases(ptses)
-    test_cases += mesh_test_cases
-    additional_test_cases = additional_mesh_test_cases
+    test_cases += autoprojects.mesh.test_cases(ptses)
 
-    return test_cases, additional_test_cases
+    return test_cases
+
+
+class PtsInitArgs(object):
+    """
+    Translates arguments provided in 'config.py' file to be used by
+    'autoptsclient.init_pts' function
+    """
+    def __init__(self, args):
+        self.ip_addr = args['server_ip']
+        self.local_addr = args['local_ip']
+        self.workspace = args["workspace"]
+        self.bd_addr = args["bd_addr"]
+        self.enable_max_logs = args["enable_max_logs"]
+        self.retry = args["retry"]
+        self.test_cases = []
+        self.excluded = []
 
 
 def run_tests(args, iut_config):
@@ -201,18 +216,30 @@ def run_tests(args, iut_config):
     status = {}
     descriptions = {}
     total_regressions = []
+    _args = {}
 
     callback_thread = autoptsclient.init_core()
 
-    ptses = []
-    for ip, local in zip(args['server_ip'], args['local_ip']):
-        ptses.append(autoptsclient.init_pts(ip,
-                                            args["workspace"],
-                                            args["bd_addr"],
-                                            args["enable_max_logs"],
-                                            callback_thread,
-                                            "mynewt_" + str(args["board"]),
-                                            local))
+    config_default = "default.conf"
+    _args[config_default] = PtsInitArgs(args)
+
+    for config, value in iut_config.items():
+        if 'test_cases' not in value:
+            # Rename default config
+            _args[config] = _args.pop(config_default)
+            config_default = config
+            continue
+
+        if config != config_default:
+            _args[config] = PtsInitArgs(args)
+
+        _args[config].test_cases = value.get('test_cases', [])
+
+        if 'overlay' in value:
+            _args[config_default].excluded += _args[config].test_cases
+
+    ptses = autoptsclient.init_pts(_args[config_default], callback_thread,
+                                   "mynewt_" + str(args["board"]))
 
     btp.init(get_iut)
     # Main instance of PTS
@@ -225,31 +252,22 @@ def run_tests(args, iut_config):
     stack_inst = stack.get_stack()
     stack_inst.synch_init(callback_thread.set_pending_response,
                           callback_thread.clear_pending_responses)
-    # cache = autoptsclient.cache_workspace(pts)
 
     default_to_omit = []
 
-    for config, value in iut_config.items():
-        if 'overlay' not in value:
-            continue
-        for test_case in value.get('test_cases', []):
-            default_to_omit.append(test_case)
+    # for config, value in iut_config.items():
+    #     if 'overlay' not in value:
+    #         continue
+    #     for test_case in value.get('test_cases', []):
+    #         default_to_omit.append(test_case)
 
     for config, value in iut_config.items():
         overlay = None
 
         if 'overlay' in value:
-            # TODO:
             overlay = value['overlay']
-            to_run = value['test_cases']
-            to_omit = None
-        else:
-            to_run = value['test_cases']
-            to_omit = default_to_omit
 
-        # tty = build_and_flash(args["project_path"], args["board"],
-        #                       overlay)
-        tty = get_tty_path("J-Link")
+        tty = build_and_flash(args["project_path"], args["board"], overlay)
         logging.debug("TTY path: %s" % tty)
 
         time.sleep(10)
@@ -263,13 +281,10 @@ def run_tests(args, iut_config):
         autoprojects.l2cap.set_pixits(ptses[0])
         autoprojects.mesh.set_pixits(ptses)
 
-        test_cases, additional_test_cases = get_test_cases(ptses)
-        if to_run or to_omit:
-            test_cases = autoptsclient.get_test_cases_subset(test_cases,
-                                                             to_run, to_omit)
+        test_cases = get_test_cases(ptses)
 
         status_count, results_dict, regressions = autoptsclient.run_test_cases(
-            ptses, test_cases, additional_test_cases, int(args["retry"]))
+            ptses, test_cases, _args[config])
         total_regressions += regressions
 
         for k, v in status_count.items():
@@ -281,19 +296,18 @@ def run_tests(args, iut_config):
         results.update(results_dict)
         autoprojects.iutctl.cleanup()
 
-    # for test_case_name in results.keys():
-    #     descriptions[test_case_name] = \
-    #         autoptsclient.get_test_case_description(cache, test_case_name)
+    for test_case_name in results.keys():
+        project_name = test_case_name.split('/')[0]
+        descriptions[test_case_name] = \
+            pts.get_test_case_description(project_name, test_case_name)
 
-    # autoptsclient.cache_cleanup(cache)
-
-    pts.unregister_xmlrpc_ptscallback()
+    for pts in ptses:
+        pts.unregister_xmlrpc_ptscallback()
 
     return status, results, descriptions, total_regressions
 
 
-def compose_mail(args, mynewt_hash_html, summary_html,
-                 reg_html, log_url_html, name):
+def compose_mail(args, mail_cfg, mail_ctx):
     """ Create a email body
     """
 
@@ -308,14 +322,16 @@ def compose_mail(args, mynewt_hash_html, summary_html,
     <b> Platform:</b> VirtualBox <br>
     <b> Version:</b> {} </p>
     <h2>3. Test Results</h2>
+    <p><b>Execution Time</b>: {}</p>
     {}
     {}
     <h3>Logs</h3>
     {}
     <p>Sincerely,</p>
     <p> {}</p>
-    '''.format(args["board"], mynewt_hash_html, args['pts_ver'],
-               summary_html, reg_html, log_url_html, name)
+    '''.format(args["board"], mail_ctx["mynewt_repo_status"],
+               args['pts_ver'], mail_ctx["elapsed_time"], mail_ctx["summary"],
+               mail_ctx["regression"], mail_ctx["log_url"], mail_cfg['name'])
 
     subject = "[Mynewt Nimble] AutoPTS test session results"
 
@@ -325,59 +341,67 @@ def compose_mail(args, mynewt_hash_html, summary_html,
 def main(cfg):
     print("Mynewt bot start!")
 
+    start_time = time.time()
+
     args = cfg['auto_pts']
     args['kernel_image'] = None
 
-    # repos_info = bot.common.update_repos(args['project_path'], cfg["git"])
-    # repo_status = make_repo_status(repos_info)
+    repos_info = bot.common.update_repos(args['project_path'], cfg["git"])
+    repo_status = make_repo_status(repos_info)
 
     summary, results, descriptions, regressions = \
         run_tests(args, cfg.get('iut_config', {}))
 
-    # report_file = bot.common.make_report_xlsx(results, summary, regressions,
-    #                                           descriptions)
-    # report_txt = bot.common.make_report_txt(results, repo_status)
-    # logs_file = bot.common.archive_recursive("logs")
+    report_file = bot.common.make_report_xlsx(results, summary, regressions,
+                                              descriptions)
+    report_txt = bot.common.make_report_txt(results, repo_status)
+    logs_file = bot.common.archive_recursive("logs")
 
-    # build_info_file = get_build_info_file(os.path.abspath(args['project_path']))
+    build_info_file = get_build_info_file(os.path.abspath(args['project_path']))
 
-    # if 'gdrive' in cfg:
-    #     drive = bot.common.Drive(cfg['gdrive'])
-    #     url = drive.new_workdir(args['board'])
-    #     drive.upload(report_file)
-    #     drive.upload(report_txt)
-    #     drive.upload(logs_file)
-    #     drive.upload(build_info_file)
-    #     drive.upload("TestCase.db")
+    end_time = time.time()
 
-    # if 'mail' in cfg:
-    #     print("Sending email ...")
+    if 'gdrive' in cfg:
+        drive = bot.common.Drive(cfg['gdrive'])
+        url = drive.new_workdir(args['board'])
+        drive.upload(report_file)
+        drive.upload(report_txt)
+        drive.upload(logs_file)
+        drive.upload(build_info_file)
+        drive.upload("TestCase.db")
 
-    #     # Summary
-    #     summary_html = bot.common.status_dict2summary_html(summary)
+    if 'mail' in cfg:
+        print("Sending email ...")
 
-    #     # Provide test case description
-    #     _regressions = []
-    #     for name in regressions:
-    #         _regressions.append(
-    #             name + " - " + descriptions.get(name, "no description"))
+        # keep mail related context to simplify the code
+        mail_ctx = {}
 
-    #     reg_html = bot.common.regressions2html(_regressions)
+        # Summary
+        mail_ctx["summary"] = bot.common.status_dict2summary_html(summary)
 
-    #     # Log in Google drive in HTML format
-    #     if 'gdrive' in cfg:
-    #         log_url_html = bot.common.url2html(url, "Results on Google Drive")
-    #     else:
-    #         log_url_html = "Not Available"
+        # Regression and test case description
+        mail_ctx["regression"] = bot.common.regressions2html(regressions,
+                                                             descriptions)
 
-    #     subject, body = compose_mail(args, repo_status, summary_html,
-    #                                  reg_html, log_url_html,
-    #                                  cfg['mail']['name'])
+        mail_ctx["mynewt_repo_status"] = repo_status
 
-    #     bot.common.send_mail(cfg['mail'], subject, body,
-    #                          [report_file, report_txt])
+        # Log in Google drive in HTML format
+        if 'gdrive' in cfg:
+            mail_ctx["log_url"] = bot.common.url2html(url,
+                                                      "Results on Google Drive")
+        else:
+            mail_ctx["log_url"] = "Not Available"
 
-    #     print("Done")
+        # Elapsed Time
+        mail_ctx["elapsed_time"] = str(datetime.timedelta(
+                                       seconds=(end_time - start_time)))
+
+        subject, body = compose_mail(args, cfg['mail'], mail_ctx)
+
+        bot.common.send_mail(cfg['mail'], subject, body,
+                             [report_file, report_txt])
+
+        print("Done")
 
     bot.common.cleanup()
 

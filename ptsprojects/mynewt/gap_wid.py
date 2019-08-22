@@ -48,19 +48,10 @@ def hdl_wid_4(desc):
 def hdl_wid_5(desc):
     stack = get_stack()
 
-    ad = []
-    sd = []
-
     btp.gap_set_nonconn()
     btp.gap_set_nondiscov()
 
-    if stack.gap.name:
-        ad.append((AdType.name_short, hexlify(stack.gap.name)))
-
-    if stack.gap.manufacturer_data:
-        sd.append((AdType.manufacturer_data, stack.gap.manufacturer_data))
-
-    btp.gap_adv_ind_on(ad=ad, sd=sd)
+    btp.gap_adv_ind_on(ad=stack.gap.ad, sd=stack.gap.sd)
     return True
 
 
@@ -97,14 +88,9 @@ def hdl_wid_20(desc):
 def hdl_wid_21(desc):
     stack = get_stack()
 
-    ad = []
-
     btp.gap_set_conn()
 
-    if stack.gap.name:
-        ad.append((AdType.name_short, hexlify(stack.gap.name)))
-
-    btp.gap_adv_ind_on(ad=ad)
+    btp.gap_adv_ind_on(ad=stack.gap.ad)
 
     return True
 
@@ -117,12 +103,7 @@ def hdl_wid_23(desc):
 def hdl_wid_24(desc):
     stack = get_stack()
 
-    ad = []
-
-    if stack.gap.name:
-        ad.append((AdType.name_short, hexlify(stack.gap.name)))
-
-    btp.gap_adv_ind_on(ad=ad)
+    btp.gap_adv_ind_on(ad=stack.gap.ad)
 
     return True
 
@@ -130,12 +111,10 @@ def hdl_wid_24(desc):
 def hdl_wid_25(desc):
     stack = get_stack()
 
-    ad = []
-
     if stack.gap.flags:
-        ad.append((AdType.flags, stack.gap.flags))
+        stack.gap.ad[AdType.flags] = stack.gap.flags
 
-    btp.gap_adv_ind_on(ad=ad)
+    btp.gap_adv_ind_on(ad=stack.gap.ad)
 
     return True
 
@@ -143,12 +122,9 @@ def hdl_wid_25(desc):
 def hdl_wid_26(desc):
     stack = get_stack()
 
-    ad =[]
+    stack.gap.ad[AdType.manufacturer_data] = stack.gap.manufacturer_data
 
-    if stack.gap.manufacturer_data:
-        ad.append((AdType.manufacturer_data, stack.gap.manufacturer_data))
-
-    btp.gap_adv_ind_on(ad=ad)
+    btp.gap_adv_ind_on(ad=stack.gap.ad)
 
     return True
 
@@ -156,12 +132,19 @@ def hdl_wid_26(desc):
 def hdl_wid_27(desc):
     stack = get_stack()
 
-    ad =[]
+    stack.gap.ad[AdType.tx_power] = '00'
 
-    if stack.gap.manufacturer_data:
-        ad.append((AdType.tx_power, 00))
+    btp.gap_adv_ind_on(ad=stack.gap.ad)
 
-    btp.gap_adv_ind_on(ad=ad)
+    return True
+
+
+def hdl_wid_29(desc):
+    stack = get_stack()
+
+    stack.gap.ad[AdType.slave_conn_interval_range] = 'ffffffff'
+
+    btp.gap_adv_ind_on(ad=stack.gap.ad)
 
     return True
 
@@ -169,12 +152,10 @@ def hdl_wid_27(desc):
 def hdl_wid_35(desc):
     stack = get_stack()
 
-    ad = []
+    if stack.gap.svcs:
+        stack.gap.ad[AdType.uuid16_some] = stack.gap.svcs
 
-    if stack.gap.name:
-        ad.append((AdType.uuid16_some, stack.gap.svcs))
-
-    btp.gap_adv_ind_on(ad=ad)
+    btp.gap_adv_ind_on(ad=stack.gap.ad)
 
     return True
 
@@ -214,15 +195,10 @@ def hdl_wid_46(desc):
 def hdl_wid_47(desc):
     stack = get_stack()
 
-    ad = []
-
     btp.gap_set_nonconn()
     btp.gap_set_nondiscov()
 
-    if stack.gap.name:
-        ad.append((AdType.name_short, hexlify(stack.gap.name)))
-
-    btp.gap_adv_ind_on(ad=ad)
+    btp.gap_adv_ind_on(ad=stack.gap.ad)
 
     return True
 
@@ -230,14 +206,9 @@ def hdl_wid_47(desc):
 def hdl_wid_49(desc):
     stack = get_stack()
 
-    ad = []
-
     btp.gap_set_limdiscov()
 
-    if stack.gap.name:
-        ad.append((AdType.name_short, hexlify(stack.gap.name)))
-
-    btp.gap_adv_ind_on(ad=ad)
+    btp.gap_adv_ind_on(ad=stack.gap.ad)
 
     return True
 
@@ -245,14 +216,9 @@ def hdl_wid_49(desc):
 def hdl_wid_50(desc):
     stack = get_stack()
 
-    ad = []
-
     btp.gap_set_limdiscov()
 
-    if stack.gap.name:
-        ad.append((AdType.name_short, hexlify(stack.gap.name)))
-
-    btp.gap_adv_ind_on(ad=ad)
+    btp.gap_adv_ind_on(ad=stack.gap.ad)
 
     return True
 
@@ -260,15 +226,9 @@ def hdl_wid_50(desc):
 def hdl_wid_51(desc):
     stack = get_stack()
 
-    ad = []
-
-    btp.gap_set_conn()
     btp.gap_set_gendiscov()
 
-    if stack.gap.name:
-        ad.append((AdType.name_short, hexlify(stack.gap.name)))
-
-    btp.gap_adv_ind_on(ad=ad)
+    btp.gap_adv_ind_on(ad=stack.gap.ad)
 
     return True
 
@@ -291,15 +251,20 @@ def hdl_wid_54(desc):
 def hdl_wid_55(desc):
     stack = get_stack()
 
-    ad = []
-
     btp.gap_set_conn()
     btp.gap_set_limdiscov()
 
-    if stack.gap.name:
-        ad.append((AdType.name_short, hexlify(stack.gap.name)))
+    btp.gap_adv_ind_on(ad=stack.gap.ad)
 
-    btp.gap_adv_ind_on(ad=ad)
+    return True
+
+
+def hdl_wid_56(desc):
+    stack = get_stack()
+
+    stack.gap.ad[AdType.uuid16_svc_solicit] = stack.gap.svc_data
+
+    btp.gap_adv_ind_on(ad=stack.gap.ad)
 
     return True
 
@@ -307,12 +272,10 @@ def hdl_wid_55(desc):
 def hdl_wid_57(desc):
     stack = get_stack()
 
-    ad = []
-
     if stack.gap.svc_data:
-        ad.append((AdType.uuid16_svc_data, stack.gap.svc_data))
+        stack.gap.ad[AdType.uuid16_svc_data] = stack.gap.svc_data
 
-    btp.gap_adv_ind_on(ad=ad)
+    btp.gap_adv_ind_on(ad=stack.gap.ad)
 
     return True
 
@@ -320,15 +283,10 @@ def hdl_wid_57(desc):
 def hdl_wid_59(desc):
     stack = get_stack()
 
-    ad = []
-
     btp.gap_set_nonconn()
     btp.gap_set_limdiscov()
 
-    if stack.gap.name:
-        ad.append((AdType.name_short, hexlify(stack.gap.name)))
-
-    btp.gap_adv_ind_on(ad=ad)
+    btp.gap_adv_ind_on(ad=stack.gap.ad)
 
     return True
 
@@ -348,15 +306,10 @@ def hdl_wid_60(desc):
 def hdl_wid_72(desc):
     stack = get_stack()
 
-    ad = []
-
     btp.gap_set_conn()
     btp.gap_set_nondiscov()
 
-    if stack.gap.name:
-        ad.append((AdType.name_short, hexlify(stack.gap.name)))
-
-    btp.gap_adv_ind_on(ad=ad)
+    btp.gap_adv_ind_on(ad=stack.gap.ad)
 
     return True
 
@@ -369,15 +322,10 @@ def hdl_wid_74(desc):
 def hdl_wid_75(desc):
     stack = get_stack()
 
-    ad = []
-
     btp.gap_set_conn()
     btp.gap_set_gendiscov()
 
-    if stack.gap.name:
-        ad.append((AdType.name_short, hexlify(stack.gap.name)))
-
-    btp.gap_adv_ind_on(ad=ad)
+    btp.gap_adv_ind_on(ad=stack.gap.ad)
 
     return True
 
@@ -388,7 +336,6 @@ def hdl_wid_76(desc):
 
 
 def hdl_wid_77(desc):
-    # sleep(2)
     btp.gap_disconn()
     return True
 
@@ -399,36 +346,18 @@ def hdl_wid_78(desc):
 
 
 def hdl_wid_79(desc):
-    stack = get_stack()
-
-    ad = []
-    sd = []
-
-    btp.gap_set_nonconn()
-
-    if stack.gap.name:
-        ad.append((AdType.name_short, hexlify(stack.gap.name)))
-
-    if stack.gap.manufacturer_data:
-        sd.append((AdType.manufacturer_data, stack.gap.manufacturer_data))
-
-    btp.gap_adv_ind_on(ad=ad, sd=sd)
-    return True
+    return hdl_wid_80(desc)
 
 
 def hdl_wid_80(desc):
     stack = get_stack()
 
-    ad = []
-
     btp.gap_adv_off()
     btp.gap_set_nonconn()
     btp.gap_set_nondiscov()
 
-    if stack.gap.name:
-        ad.append((AdType.name_short, hexlify(stack.gap.name)))
+    btp.gap_adv_ind_on(ad=stack.gap.ad)
 
-    btp.gap_adv_ind_on(ad=ad)
     return True
 
 
@@ -455,34 +384,22 @@ def hdl_wid_89(desc):
 def hdl_wid_90(desc):
     stack = get_stack()
 
-    ad = []
-    sd = []
+    btp.gap_adv_off()
+    btp.gap_set_conn()
+    btp.gap_set_gendiscov()
 
-    if stack.gap.name:
-        ad.append((AdType.name_short, hexlify(stack.gap.name)))
+    btp.gap_adv_ind_on(ad=stack.gap.ad)
 
-    if stack.gap.manufacturer_data:
-        sd.append((AdType.manufacturer_data, stack.gap.manufacturer_data))
-
-    btp.gap_adv_ind_on(ad=ad, sd=sd)
     return True
 
 
 def hdl_wid_91(desc):
     stack = get_stack()
 
-    ad = []
-    sd = []
-
     btp.gap_set_conn()
 
-    if stack.gap.name:
-        ad.append((AdType.name_short, hexlify(stack.gap.name)))
+    btp.gap_adv_ind_on(ad=stack.gap.ad)
 
-    if stack.gap.manufacturer_data:
-        sd.append((AdType.manufacturer_data, stack.gap.manufacturer_data))
-
-    btp.gap_adv_ind_on(ad=ad, sd=sd)
     return True
 
 
@@ -681,12 +598,10 @@ def hdl_wid_148(desc):
 def hdl_wid_149(desc):
     stack = get_stack()
 
-    ad = []
-
     if stack.gap.appearance:
-        ad.append((AdType.gap_appearance, stack.gap.appearance))
+        stack.gap.ad[AdType.gap_appearance] = stack.gap.appearance
 
-    btp.gap_adv_ind_on(ad=ad)
+    btp.gap_adv_ind_on(ad=stack.gap.ad)
 
     return True
 
@@ -751,12 +666,11 @@ def hdl_wid_169(desc):
 def hdl_wid_173(desc):
     stack = get_stack()
 
-    ad =[]
+    # Prepare space for URI
+    stack.gap.sd.clear()
+    stack.gap.sd[AdType.uri] = stack.gap.uri
 
-    if stack.gap.uri:
-        ad.append((AdType.uri, stack.gap.uri))
-
-    btp.gap_adv_ind_on(ad=ad)
+    btp.gap_adv_ind_on(sd=stack.gap.sd)
 
     return True
 
