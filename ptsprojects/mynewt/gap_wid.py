@@ -519,12 +519,15 @@ def hdl_wid_138(desc):
 
 def hdl_wid_139(desc):
     attrs = btp.gatts_get_attrs(type_uuid='2803')
+    bd_addr = btp.pts_addr_get()
+    bd_addr_type = btp.pts_addr_type_get()
+
     for attr in attrs:
         if not attr:
             continue
 
         (handle, permission, type_uuid) = attr
-        data = btp.gatts_get_attr_val(handle)
+        data = btp.gatts_get_attr_val(bd_addr_type, bd_addr, handle)
         if not data:
             continue
 
@@ -563,12 +566,15 @@ def hdl_wid_143(desc):
 
 def hdl_wid_144(desc):
     attrs = btp.gatts_get_attrs(type_uuid='2803')
+    bd_addr = btp.pts_addr_get()
+    bd_addr_type = btp.pts_addr_type_get()
+
     for attr in attrs:
         if not attr:
             continue
 
         (handle, permission, type_uuid) = attr
-        data = btp.gatts_get_attr_val(handle)
+        data = btp.gatts_get_attr_val(bd_addr_type, bd_addr, handle)
         if not data:
             continue
 
@@ -621,6 +627,9 @@ def hdl_wid_161(desc):
     match = re.findall(r'(0[xX])?([0-9a-fA-F]{4})', desc)
     handle = int(match[0][1], 16)
 
+    bd_addr = btp.pts_addr_get()
+    bd_addr_type = btp.pts_addr_type_get()
+
     attr = btp.gatts_get_attrs(handle, handle)
     if not attr:
         return
@@ -628,7 +637,7 @@ def hdl_wid_161(desc):
     (handle, permission, type_uuid) = attr.pop()
 
     # Check if characteristic has signed write property
-    value = btp.gatts_get_attr_val(handle - 1)
+    value = btp.gatts_get_attr_val(bd_addr_type, bd_addr, handle - 1)
     if not value:
         return
 
@@ -646,7 +655,7 @@ def hdl_wid_161(desc):
 
     chrc_uuid = btp.btp2uuid(uuid_len, chrc_uuid)
 
-    value = btp.gatts_get_attr_val(handle)
+    value = btp.gatts_get_attr_val(bd_addr_type, bd_addr, handle)
     if not value:
         return
 
