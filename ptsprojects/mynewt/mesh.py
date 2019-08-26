@@ -455,6 +455,8 @@ def test_cases(ptses):
                   generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/NODE/PROV/BI-02-C", cmds=pre_conditions,
                   generic_wid_hdl=mesh_wid_hdl),
+        ZTestCase("MESH", "MESH/NODE/PROV/BI-03-C", cmds=pre_conditions,
+                  generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/NODE/PROV/BV-01-C",
                   cmds=pre_conditions +
                   [TestFunc(stack.mesh_init, device_uuid, oob,
