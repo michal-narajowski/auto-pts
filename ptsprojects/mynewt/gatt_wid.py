@@ -15,6 +15,8 @@
 
 import logging
 import sys
+import time
+
 from pybtp import btp
 import re
 import struct
@@ -53,6 +55,7 @@ def hdl_wid_2(desc):
 
 
 def hdl_wid_3(desc):
+    time.sleep(2)
     btp.gap_disconn(btp.pts_addr_get(None), btp.pts_addr_type_get(None))
     return True
 
@@ -762,9 +765,10 @@ def hdl_wid_81(desc):
     btp.gattc_write_long(btp.pts_addr_type_get(None), btp.pts_addr_get(None),
                          hdl, 0, '1234', val_mtp)
 
-    # btp.gattc_write_long_rsp(True)
+    btp.gattc_write_long_rsp(True)
 
     return True
+
 
 def hdl_wid_82(desc):
     return True
