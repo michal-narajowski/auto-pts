@@ -15,6 +15,8 @@
 import copy
 import logging
 import sys
+import time
+
 from pybtp import btp
 from pybtp.types import Prop, Perm, UUID, AdType
 import re
@@ -336,6 +338,7 @@ def hdl_wid_76(desc):
 
 
 def hdl_wid_77(desc):
+    time.sleep(2)
     btp.gap_disconn()
     return True
 
