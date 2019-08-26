@@ -496,20 +496,9 @@ def test_cases(pts):
                        [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
                   generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/PRIV/CONN/BV-10-C",
-                  edit1_wids={1002: btp.var_store_get_passkey},
                   cmds=pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
-                   TestFunc(btp.gap_set_conn),
-                   TestFunc(btp.gap_set_gendiscov),
-
-                   TestFunc(btp.gap_adv_ind_on,
-                            ad=[AdData.ad_name_sh], start_wid=91),
-                   TestFunc(btp.gap_disconn, start_wid=77),
-
-                   TestFunc(btp.gap_adv_off, start_wid=90,
-                            skip_call=(1,)),
-                   TestFunc(btp.gap_adv_ind_on,
-                            ad=[AdData.ad_name_sh], start_wid=90)]),
+                       [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/PRIV/CONN/BV-11-C",
                   cmds=pre_conditions,
                   generic_wid_hdl=gap_wid_hdl),
