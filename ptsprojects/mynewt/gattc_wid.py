@@ -38,8 +38,9 @@ def gattc_wid_hdl(wid, description, test_case_name):
 
 
 def hdl_wid_10(desc):
-    btp.gattc_disc_prim_svcs(btp.pts_addr_type_get(None), btp.pts_addr_get(None))
-    btp.gattc_disc_prim_svcs_rsp()
+    btp.gattc_disc_all_prim(btp.pts_addr_type_get(None),
+                            btp.pts_addr_get(None))
+    btp.gattc_disc_all_prim_rsp()
     return True
 
 

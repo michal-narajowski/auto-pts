@@ -62,6 +62,13 @@ def hdl_wid_4(desc):
     return True
 
 
+def hdl_wid_10(desc):
+    btp.gattc_disc_all_prim(btp.pts_addr_type_get(None),
+                            btp.pts_addr_get(None))
+    btp.gattc_disc_all_prim_rsp()
+    return True
+
+
 def hdl_wid_11(desc):
     return True
 
