@@ -725,8 +725,10 @@ def hdl_wid_77(desc):
         logging.error("parsing error")
         return False
 
-    btp.gattc_write_reliable(btp.pts_addr_type_get(None), btp.pts_addr_get(None),
-                             hdl, offset, '12', None)
+    btp.gattc_write_long(btp.pts_addr_type_get(None), btp.pts_addr_get(None),
+                         hdl, offset, '12', offset + 2)
+
+    btp.gattc_write_long_rsp(True)
 
     return True
 
