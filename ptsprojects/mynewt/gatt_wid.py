@@ -777,6 +777,8 @@ def hdl_wid_82(desc):
 
 
 def hdl_wid_90(desc):
+    btp.gattc_notification_ev(btp.pts_addr_get(None),
+                              btp.pts_addr_type_get(None), 1)
     return True
 
 
