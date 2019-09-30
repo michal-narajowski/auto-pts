@@ -259,7 +259,8 @@ def run_tests(args, iut_config):
         if 'overlay' in value:
             overlay = value['overlay']
 
-        tty = build_and_flash(args["project_path"], args["board"], overlay)
+        # tty = build_and_flash(args["project_path"], args["board"], overlay)
+        tty = get_tty_path("J-Link")
         logging.debug("TTY path: %s" % tty)
 
         time.sleep(10)
@@ -338,62 +339,62 @@ def main(cfg):
     args = cfg['auto_pts']
     args['kernel_image'] = None
 
-    repos_info = bot.common.update_repos(args['project_path'], cfg["git"])
-    repo_status = make_repo_status(repos_info)
+    # repos_info = bot.common.update_repos(args['project_path'], cfg["git"])
+    # repo_status = make_repo_status(repos_info)
 
     summary, results, descriptions, regressions = \
         run_tests(args, cfg.get('iut_config', {}))
 
-    report_file = bot.common.make_report_xlsx(results, summary, regressions,
-                                              descriptions)
-    report_txt = bot.common.make_report_txt(results, repo_status)
-    logs_file = bot.common.archive_recursive("logs")
+    # report_file = bot.common.make_report_xlsx(results, summary, regressions,
+    #                                           descriptions)
+    # report_txt = bot.common.make_report_txt(results, repo_status)
+    # logs_file = bot.common.archive_recursive("logs")
+    #
+    # build_info_file = get_build_info_file(os.path.abspath(args['project_path']))
+    #
+    # end_time = time.time()
 
-    build_info_file = get_build_info_file(os.path.abspath(args['project_path']))
-
-    end_time = time.time()
-
-    if 'gdrive' in cfg:
-        drive = bot.common.Drive(cfg['gdrive'])
-        url = drive.new_workdir(args['board'])
-        drive.upload(report_file)
-        drive.upload(report_txt)
-        drive.upload(logs_file)
-        drive.upload(build_info_file)
-        drive.upload("TestCase.db")
-
-    if 'mail' in cfg:
-        print("Sending email ...")
-
-        # keep mail related context to simplify the code
-        mail_ctx = {}
-
-        # Summary
-        mail_ctx["summary"] = bot.common.status_dict2summary_html(summary)
-
-        # Regression and test case description
-        mail_ctx["regression"] = bot.common.regressions2html(regressions,
-                                                             descriptions)
-
-        mail_ctx["mynewt_repo_status"] = repo_status
-
-        # Log in Google drive in HTML format
-        if 'gdrive' in cfg:
-            mail_ctx["log_url"] = bot.common.url2html(url,
-                                                      "Results on Google Drive")
-        else:
-            mail_ctx["log_url"] = "Not Available"
-
-        # Elapsed Time
-        mail_ctx["elapsed_time"] = str(datetime.timedelta(
-                                       seconds=(end_time - start_time)))
-
-        subject, body = compose_mail(args, cfg['mail'], mail_ctx)
-
-        bot.common.send_mail(cfg['mail'], subject, body,
-                             [report_file, report_txt])
-
-        print("Done")
+    # if 'gdrive' in cfg:
+    #     drive = bot.common.Drive(cfg['gdrive'])
+    #     url = drive.new_workdir(args['board'])
+    #     drive.upload(report_file)
+    #     drive.upload(report_txt)
+    #     drive.upload(logs_file)
+    #     drive.upload(build_info_file)
+    #     drive.upload("TestCase.db")
+    #
+    # if 'mail' in cfg:
+    #     print("Sending email ...")
+    #
+    #     # keep mail related context to simplify the code
+    #     mail_ctx = {}
+    #
+    #     # Summary
+    #     mail_ctx["summary"] = bot.common.status_dict2summary_html(summary)
+    #
+    #     # Regression and test case description
+    #     mail_ctx["regression"] = bot.common.regressions2html(regressions,
+    #                                                          descriptions)
+    #
+    #     mail_ctx["mynewt_repo_status"] = repo_status
+    #
+    #     # Log in Google drive in HTML format
+    #     if 'gdrive' in cfg:
+    #         mail_ctx["log_url"] = bot.common.url2html(url,
+    #                                                   "Results on Google Drive")
+    #     else:
+    #         mail_ctx["log_url"] = "Not Available"
+    #
+    #     # Elapsed Time
+    #     mail_ctx["elapsed_time"] = str(datetime.timedelta(
+    #                                    seconds=(end_time - start_time)))
+    #
+    #     subject, body = compose_mail(args, cfg['mail'], mail_ctx)
+    #
+    #     bot.common.send_mail(cfg['mail'], subject, body,
+    #                          [report_file, report_txt])
+    #
+    #     print("Done")
 
     bot.common.cleanup()
 
