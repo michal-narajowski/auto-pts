@@ -182,7 +182,7 @@ def test_cases(pts):
                   generic_wid_hdl=l2cap_wid_hdl),
         ZTestCase("L2CAP", "L2CAP/LE/CFC/BV-06-C",
                   pre_conditions +
-                  [TestFunc(lambda: stack.l2cap.set_send_data("FF" * 10))],
+                  [TestFunc(lambda: stack.l2cap.set_send_data("FF" * 80))],
                   generic_wid_hdl=l2cap_wid_hdl),
         ZTestCase("L2CAP", "L2CAP/LE/CFC/BV-07-C",
                   pre_conditions,
