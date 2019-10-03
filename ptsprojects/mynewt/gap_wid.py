@@ -435,16 +435,12 @@ def hdl_wid_112(desc):
     bd_addr = btp.pts_addr_get()
     bd_addr_type = btp.pts_addr_type_get()
 
-    btp.gattc_disc_all_chrc(bd_addr_type, bd_addr, 0x0001, 0xffff)
-    attrs = btp.gattc_disc_all_chrc_rsp()
+    handle = btp.parse_handle_description(desc)
+    if not handle:
+        return False
 
-    for attr in attrs:
-        if attr.prop & Prop.read:
-            btp.gattc_read(bd_addr_type, bd_addr, attr.value_handle)
-            btp.gattc_read_rsp()
-            return True
-
-    return False
+    btp.gattc_read(bd_addr_type, bd_addr, handle)
+    return True
 
 
 def hdl_wid_114(desc):
