@@ -721,6 +721,16 @@ def hdl_wid_204(desc):
     return btp.check_discov_results(addr_type=0x02)
 
 
+def hdl_wid_206(desc):
+    stack = get_stack()
+
+    passkey = btp.parse_passkey_description(desc)
+    stack.gap.passkey.data = passkey
+
+    btp.gap_passkey_entry_req_ev()
+    return True
+
+
 def hdl_wid_1002(desc):
     stack = get_stack()
     passkey = stack.gap.get_passkey()

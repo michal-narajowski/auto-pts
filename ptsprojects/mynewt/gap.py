@@ -443,7 +443,7 @@ def test_cases(pts):
                   generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/SEC/AUT/BV-14-C",
                   cmds=pre_conditions +
-                       [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output)],
+                       [TestFunc(btp.gap_set_io_cap, IOCap.keyboard_display)],
                   generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/SEC/AUT/BV-17-C",
                   cmds=pre_conditions +
