@@ -723,7 +723,7 @@ def hdl_wid_204(desc):
 
 def hdl_wid_1002(desc):
     stack = get_stack()
-    passkey = stack.gap.passkey.data
+    passkey = stack.gap.get_passkey()
     stack.gap.passkey.data = None
     return passkey
 
