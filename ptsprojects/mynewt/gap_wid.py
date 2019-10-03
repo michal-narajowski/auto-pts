@@ -333,7 +333,13 @@ def hdl_wid_75(desc):
 
 
 def hdl_wid_76(desc):
-    hdl_wid_55(desc)
+    stack = get_stack()
+
+    btp.gap_set_conn()
+    btp.gap_set_limdiscov()
+
+    btp.gap_adv_ind_on(ad=stack.gap.ad)
+
     return True
 
 
