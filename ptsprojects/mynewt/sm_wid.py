@@ -38,8 +38,6 @@ def sm_wid_hdl(wid, description, test_case_name):
 # wid handlers section begin
 def hdl_wid_100(desc):
     btp.gap_conn()
-    btp.gap_wait_for_connection()
-    btp.gap_pair()
     return True
 
 
@@ -62,6 +60,7 @@ def hdl_wid_106(desc):
 
 
 def hdl_wid_108(desc):
+    btp.gap_pair()
     return True
 
 
@@ -105,6 +104,14 @@ def hdl_wid_143(desc):
     btp.core_reg_svc_gap()
     btp.gap_read_ctrl_info()
 
+    return True
+
+
+def hdl_wid_154(desc):
+    return True
+
+
+def hdl_wid_155(desc):
     return True
 
 
