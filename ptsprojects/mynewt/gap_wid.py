@@ -628,6 +628,10 @@ def hdl_wid_158(desc):
     return True
 
 
+def hdl_wid_159(desc):
+    return True
+
+
 def hdl_wid_161(desc):
     match = re.findall(r'(0[xX])?([0-9a-fA-F]{4})', desc)
     handle = int(match[0][1], 16)

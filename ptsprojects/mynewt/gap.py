@@ -229,7 +229,9 @@ def test_cases(pts):
         ZTestCase("GAP", "GAP/BROB/BCST/BV-04-C",
                   cmds=pre_conditions,
                   generic_wid_hdl=gap_wid_hdl),
-        # TODO: GAP/BROB/BCST/BV-05-C
+        ZTestCase("GAP", "GAP/BROB/BCST/BV-05-C",
+                  cmds=pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/BROB/OBSV/BV-01-C",
                   cmds=pre_conditions,
                   generic_wid_hdl=gap_wid_hdl),
