@@ -355,7 +355,9 @@ def hdl_wid_78(desc):
 
 
 def hdl_wid_79(desc):
-    return hdl_wid_80(desc)
+    stack = get_stack()
+    btp.gap_adv_ind_on(ad=stack.gap.ad)
+    return True
 
 
 def hdl_wid_80(desc):
