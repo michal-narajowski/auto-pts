@@ -15,6 +15,7 @@
 
 import logging
 import sys
+from time import sleep
 
 from ptsprojects.stack import get_stack
 from pybtp import btp
@@ -47,11 +48,13 @@ def hdl_wid_101(desc):
 
 
 def hdl_wid_102(desc):
+    sleep(2)
     btp.gap_disconn()
     return True
 
 
 def hdl_wid_104(desc):
+    sleep(10)
     return btp.var_store_get_passkey(desc)
 
 
@@ -82,8 +85,12 @@ def hdl_wid_111(desc):
 
 
 def hdl_wid_115(desc):
+    stack = get_stack()
+
     btp.gap_set_conn()
-    btp.gap_adv_ind_on()
+    btp.gap_set_gendiscov()
+
+    btp.gap_adv_ind_on(ad=stack.gap.ad)
     return True
 
 
