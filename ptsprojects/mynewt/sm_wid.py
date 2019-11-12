@@ -14,12 +14,13 @@
 #
 
 import logging
+import re
 import sys
 from time import sleep
 
+from iutctl import get_iut
 from ptsprojects.stack import get_stack
 from pybtp import btp
-from iutctl import get_iut
 
 log = logging.debug
 
@@ -111,6 +112,35 @@ def hdl_wid_143(desc):
     btp.core_reg_svc_gap()
     btp.gap_read_ctrl_info()
 
+    return True
+
+
+def hdl_wid_145(desc):
+    return True
+
+
+def hdl_wid_146(desc):
+    return True
+
+
+def hdl_wid_147(desc):
+    r, c = btp.gap_oob_sc_get_local_data()
+    return c
+
+
+def hdl_wid_148(desc):
+    r, c = btp.gap_oob_sc_get_local_data()
+    return r
+
+
+def hdl_wid_149(desc):
+    m = re.findall(r"\[([A-Fa-f0-9]+)\]", desc)
+    conf, rand = m
+    btp.gap_oob_sc_set_remote_data(r=rand, c=conf)
+    return True
+
+
+def hdl_wid_152(desc):
     return True
 
 
