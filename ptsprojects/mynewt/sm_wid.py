@@ -55,7 +55,7 @@ def hdl_wid_102(desc):
 
 
 def hdl_wid_104(desc):
-    sleep(10)
+    # sleep(10)
     return btp.var_store_get_passkey(desc)
 
 
