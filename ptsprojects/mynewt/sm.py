@@ -48,7 +48,7 @@ def set_pixits(pts):
     pts.set_pixit("SM", "TSPX_time_guard", "180000")
     pts.set_pixit("SM", "TSPX_use_implicit_send", "TRUE")
     pts.set_pixit("SM", "TSPX_new_key_failed_count", "0")
-    pts.set_pixit("SM", "TSPX_Bonding_Flags", "01")
+    pts.set_pixit("SM", "TSPX_Bonding_Flags", "00")
     pts.set_pixit("SM", "TSPX_ATTR_HANDLE", "0000")
     pts.set_pixit("SM", "TSPX_ATTR_VALUE", "0000000000000000")
     pts.set_pixit("SM", "TSPX_Min_Encryption_Key_Length", "07")
@@ -98,7 +98,9 @@ def test_cases(pts):
                   [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
                   generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/SLA/JW/BI-02-C",
-                  pre_conditions,
+                  pre_conditions +
+                  [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
+                   TestFunc(btp.gap_set_bondable_on)],
                   generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/SLA/JW/BI-03-C",
                   pre_conditions,
@@ -258,7 +260,8 @@ def test_cases(pts):
                   generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/SLA/KDU/BV-07-C",
                   pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
+                   TestFunc(btp.gap_set_bondable_on)],
                   generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/SLA/SIP/BV-01-C",
                   pre_conditions +
@@ -270,7 +273,8 @@ def test_cases(pts):
                   generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/SLA/SIE/BV-01-C",
                   pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output)],
+                  [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
+                   TestFunc(btp.gap_set_bondable_on)],
                   generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/MAS/KDU/BV-10-C",
                   pre_conditions +
@@ -306,7 +310,8 @@ def test_cases(pts):
                   generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/MAS/SCPK/BI-02-C",
                   pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
+                   TestFunc(btp.gap_set_bondable_on)],
                   generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/SLA/KDU/BV-08-C",
                   pre_conditions +

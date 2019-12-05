@@ -103,7 +103,7 @@ GAP = {
     "set_bondable_on": (defs.BTP_SERVICE_ID_GAP, defs.GAP_SET_BONDABLE,
                         CONTROLLER_INDEX, 1),
     "set_bondable_off": (defs.BTP_SERVICE_ID_GAP, defs.GAP_SET_BONDABLE,
-                         CONTROLLER_INDEX, 1),
+                         CONTROLLER_INDEX, 0),
     "start_discov": (defs.BTP_SERVICE_ID_GAP,
                      defs.GAP_START_DISCOVERY, CONTROLLER_INDEX),
     "stop_discov": (defs.BTP_SERVICE_ID_GAP, defs.GAP_STOP_DISCOVERY,
