@@ -69,6 +69,7 @@ def hdl_wid_108(desc):
 
 
 def hdl_wid_109(desc):
+    btp.gap_set_mitm_off()
     btp.gap_pair()
     return True
 
