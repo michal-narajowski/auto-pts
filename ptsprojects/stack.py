@@ -215,7 +215,9 @@ class Gap:
             return False
 
     def iut_addr_get_str(self):
-        return str(self.iut_bd_addr.data["address"])
+        if self.iut_bd_addr.data["address"]:
+            return str(self.iut_bd_addr.data["address"])
+        return None
 
     def iut_addr_set(self, addr, addr_type):
         self.iut_bd_addr.data["address"] = addr
