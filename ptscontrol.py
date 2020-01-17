@@ -34,6 +34,8 @@ Cause of tight coupling with PTS, this module is Windows specific
 """
 
 import os
+import traceback
+
 import wmi
 import sys
 import time
@@ -708,6 +710,11 @@ class PyPTS:
         """
         log("%s %s %s %s", self.update_pixit_param.__name__, project_name,
             param_name, new_param_value)
+
+        if not new_param_value or new_param_value == 'None':
+            log("Invalid PIXIT value: None")
+            log("%s", traceback.format_stack())
+            return
 
         try:
             self._pts.UpdatePixitParam(
