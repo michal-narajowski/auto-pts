@@ -687,6 +687,11 @@ class PyPTS:
         log("%s %s %s %s", self.set_pixit.__name__, project_name,
             param_name, param_value)
 
+        if not param_value or param_value == 'None':
+            log("Invalid PIXIT value: None")
+            log("%s", traceback.format_stack())
+            return
+
         try:
             self._pts.UpdatePixitParam(project_name, param_name, param_value)
             self.add_recov(self.set_pixit, project_name, param_name,
