@@ -181,7 +181,9 @@ def test_cases(ptses):
             stack.gap.iut_addr_get_str())),
         TestFunc(lambda: pts.update_pixit_param(
             "MESH", "TSPX_subscription_address_list",
-            MeshVals.subscription_addr_list1))]
+            MeshVals.subscription_addr_list1)),
+        TestFunc(lambda: pts.update_pixit_param(
+            "MESH", "TSPX_maximum_number_of_supported_subnets", 2))]
 
     pre_conditions_slave = [
         TestFunc(lambda: pts.update_pixit_param(
