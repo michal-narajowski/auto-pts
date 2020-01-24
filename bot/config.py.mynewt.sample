@@ -25,10 +25,9 @@ m = mynewt_nrf52 = {
 # ****************************************************************************
 # AutoPTS configuration
 # ****************************************************************************
-z['auto_pts'] = {
-    'server_ip': ['192.168.0.2'],
-    'client_port': 6001,
-    'local_ip' : ['192.168.0.100'],
+m['auto_pts'] = {
+    'server_ip': ['192.168.0.1', '192.168.0.2'],
+    'local_ip' : ['192.168.0.100', '192.168.0.101'],
     'project_path': '/path/to/project',
     'workspace': 'Mynewt Nimble Host',
     'board': 'nordic_pca10056',
@@ -66,7 +65,7 @@ m['git'] = {
 #
 # To send an email report with test result summary
 # ****************************************************************************
-z['mail'] = {
+m['mail'] = {
     "sender": "john.doe@example.com",
     "smtp_host": 'smtp.example.com',
     "smtp_port": 587,
@@ -84,7 +83,7 @@ z['mail'] = {
 #
 # To put the tests execution logs to Google Drive
 # ****************************************************************************
-z['gdrive'] = {
+m['gdrive'] = {
     "root_directory_id": "<GoogleDriveDirID>",
     "credentials_file": "/path/to/credentials.json",
 }
@@ -102,44 +101,25 @@ m['iut_config'] = {
         ],
     },
 
-      "privacy.conf": {
-          "overlay": {'BTTESTER_PRIVACY_MODE': '1'},
-          "test_cases": [
-              'GAP/CONN/ACEP/BV-03-C',
-              'GAP/CONN/ACEP/BV-04-C',
-              'GAP/CONN/DCEP/BV-05-C',
-              'GAP/CONN/DCEP/BV-06-C',
-              'GAP/CONN/GCEP/BV-05-C',
-              'GAP/CONN/GCEP/BV-06-C',
-              'GAP/CONN/UCON/BV-06-C',
-              'GAP/DISC/GENM/BV-03-C',
-              'GAP/PRIV/CONN/BV-10-C',
-              'GAP/PRIV/CONN/BV-11-C',
-              'GAP/PRIV/CONN/BI-01-C',
-              'GAP/PRIV/CONN/BI-10-C',
-          ]},
+    "privacy.conf": {
+        "overlay": {'BTTESTER_PRIVACY_MODE': '1'},
+        "test_cases": [
+            'GAP/BROB/BCST/BV-03-C',
+            'GAP/BROB/BCST/BV-05-C',
+            'GAP/CONN/UCON/BV-06-C',
+            'GAP/DISC/GENM/BV-03-C',
+            'GAP/PRIV/CONN/BI-01-C',
+            'GAP/PRIV/CONN/BV-10-C',
+            'GAP/PRIV/CONN/BV-11-C',
+        ]
+    },
 
-      "nrpa.conf": {
-          "overlay": {
-              'BTTESTER_PRIVACY_MODE': '1',
-              'BTTESTER_USE_NRPA': '1',
-          },
-          "test_cases": ['GAP/BROB/BCST/BV-04-C']},
-
-      "mesh_subnet_count.conf": {
-          "overlay": {'BLE_MESH_SUBNET_COUNT': '1'},
-          "test_cases": ['MESH/NODE/CFG/NKL/BI-03-C']},
-
-      "l2cap_param_update.conf": {
-
-          "overlay": {'BTTESTER_CONN_PARAM_UPDATE': '1'},
-          "test_cases": [
-              'GAP/CONN/CPUP/BV-01-C',
-              'GAP/CONN/CPUP/BV-02-C',
-              'GAP/CONN/CPUP/BV-03-C',
-              'GAP/CONN/CPUP/BV-06-C',
-              'L2CAP/LE/CPU/BV-01-C',
-          ]},
+    "nrpa.conf": {
+        "overlay": {
+            'BTTESTER_PRIVACY_MODE': '1',
+            'BTTESTER_USE_NRPA': '1',
+        },
+        "test_cases": ['GAP/BROB/BCST/BV-04-C']},
 }
 
 # ****************************************************************************
