@@ -97,6 +97,8 @@ def set_pixits(ptses):
                   "3216D1509884B533248541792B877F98")
     pts.set_pixit("MESH", "TSPX_device_key",
                   "00000000000000000000000000000000")
+    pts.set_pixit("MESH", "TSPX_enable_IUT_provisioner", "FALSE")
+    pts.set_pixit("MESH", "TSPX_maximum_number_of_supported_subnets", "1")
 
     # PTS2
     pts2.set_pixit("MESH", "TSPX_bd_addr_iut", "DEADBEEFDEAD")
@@ -136,6 +138,8 @@ def set_pixits(ptses):
                    "3216D1509884B533248541792B877F98")
     pts2.set_pixit("MESH", "TSPX_device_key",
                    "00000000000000000000000000000000")
+    pts2.set_pixit("MESH", "TSPX_enable_IUT_provisioner", "FALSE")
+    pts2.set_pixit("MESH", "TSPX_maximum_number_of_supported_subnets", "1")
 
 
 def test_cases(ptses):
@@ -178,7 +182,9 @@ def test_cases(ptses):
             stack.gap.iut_addr_get_str())),
         TestFunc(lambda: pts.update_pixit_param(
             "MESH", "TSPX_subscription_address_list",
-            MeshVals.subscription_addr_list1))]
+            MeshVals.subscription_addr_list1)),
+        TestFunc(lambda: pts.update_pixit_param(
+            "MESH", "TSPX_maximum_number_of_supported_subnets", 2))]
 
     pre_conditions_slave = [
         TestFunc(lambda: pts.update_pixit_param(
@@ -490,6 +496,8 @@ def test_cases(ptses):
                   generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/NODE/PROV/BI-13-C", cmds=pre_conditions,
                   generic_wid_hdl=mesh_wid_hdl),
+        ZTestCase("MESH", "MESH/NODE/PROV/BI-15-C", cmds=pre_conditions,
+                  generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/NODE/PROV/BV-01-C",
                   cmds=pre_conditions +
                   [TestFunc(stack.mesh_init, device_uuid, oob,
@@ -512,7 +520,10 @@ def test_cases(ptses):
                   generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/NODE/RLY/BV-01-C", cmds=pre_conditions,
                   generic_wid_hdl=mesh_wid_hdl),
-        ZTestCase("MESH", "MESH/NODE/RLY/BV-02-C", cmds=pre_conditions,
+        ZTestCase("MESH", "MESH/NODE/RLY/BV-02-C", cmds=pre_conditions +
+                  [pts.set_pixit("MESH",
+                                 "TSPX_maximum_network_message_cache_entries",
+                                 "10")],
                   generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/NODE/TNPT/BI-01-C", cmds=pre_conditions,
                   generic_wid_hdl=mesh_wid_hdl),
