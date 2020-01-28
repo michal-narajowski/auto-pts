@@ -33,13 +33,9 @@ class ZTestCase(TestCaseLT1):
         self.stack = get_stack()
         self.mynewtctl = get_iut()
 
-        # first command is to start QEMU or HW
-        self.cmds.insert(0, TestFunc(self.mynewtctl.start))
-        self.cmds.insert(1, TestFunc(self.mynewtctl.wait_iut_ready_event))
-
-        self.cmds.append(TestFuncCleanUp(self.stack.cleanup))
-        # last command is to stop QEMU or HW
+        self.cmds.insert(0, TestFunc(self.mynewtctl.wait_iut_ready_event))
         self.cmds.append(TestFuncCleanUp(self.mynewtctl.stop))
+        self.cmds.append(TestFuncCleanUp(self.stack.cleanup))
 
 
 class ZTestCaseSlave(TestCaseLT2):
