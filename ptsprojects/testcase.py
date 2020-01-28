@@ -750,7 +750,8 @@ class TestCase(PTSCallback):
         time.sleep(3)
 
         for cmd in self.cmds:
-            cmd.stop()
+            if cmd:
+                cmd.stop()
 
         # Cleanup pre created subproc
         if self.tc_subproc is not None:
