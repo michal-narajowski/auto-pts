@@ -641,6 +641,8 @@ def test_cases(ptses):
                   [TestFunc(btp.mesh_iv_test_mode_autoinit)],
                   generic_wid_hdl=mesh_wid_hdl,
                   lt2="MESH/SR/PROX/BV-14-C-LT2"),
+        ZTestCase("MESH", "MESH/SR/PROX/BV-15-C", cmds=pre_conditions,
+                  generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/NODE/FRND/FN/BI-01-C",
                   cmds=pre_conditions +
                        [TestFunc(lambda: pts.update_pixit_param(
