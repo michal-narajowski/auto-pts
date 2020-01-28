@@ -720,6 +720,8 @@ class TestCase(PTSCallback):
         # start commands that don't have start trigger (lack start_wid or
         # post_wid) and are not cleanup functions
         for cmd in self.cmds:
+            if cmd is None:
+                continue
             if cmd.start_wid is None and cmd.post_wid is None and \
                not is_cleanup_func(cmd):
                 cmd.start()
