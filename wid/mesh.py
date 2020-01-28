@@ -182,6 +182,9 @@ def hdl_wid_17(desc):
     :return:
     """
     btp.mesh_store_net_data()
+    stack = get_stack()
+    stack.mesh.net_recv_ev_data.data = None
+
     return True
 
 
@@ -1420,6 +1423,17 @@ def hdl_wid_366(desc):
 
 
 def hdl_wid_367(desc):
+    return True
+
+
+def hdl_wid_368(desc):
+    stack = get_stack()
+
+    if stack.mesh.net_recv_ev_data.data is None:
+        logging.error("Network Packet not received!")
+        return False
+
+    stack.mesh.net_recv_ev_data.data = None
     return True
 
 
