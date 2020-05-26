@@ -1,4 +1,4 @@
-<WORKSPACE_INFORMATION NAME="Mynewt Nimble Host" CREATED_WITH="Profile Tuning Suite, 7.6.0, 15" BD_ADDR="000000000000" QDID="127651">
+<WORKSPACE_INFORMATION NAME="Mynewt Nimble Host" CREATED_WITH="Profile Tuning Suite, 7.6.1, 4" BD_ADDR="000000000000" QDID="127651">
   <PROJECTS_INFORMATION>
     <PROJECT_INFORMATION NAME="GAP" TC_LOG="tc_log.xml" TC_SCRIPT="tc_sqript.xml" USERDLL="" USE_USERDLL="False" RUNTIME_LOGGING="False">
       <PICS>
@@ -1891,9 +1891,9 @@
           </Row>
           <Row>
             <Name>TSPX_URI</Name>
-            <Description>If no URI scheme is in use, or if the URI scheme in use is not defined as either a provisional or permanent scheme, TSPX_URI_scheme shall contain Unicode code point U+0001, represented in UTF-8 as 1 (hexadecimal 0x01) in the first octet. See Core Spec Supplement (CSS) v6, Section 1.1.18 (Default: 162F2F7777772E626C7565746F6F74682E636F6D - http://www.bluetooth.com)</Description>
+            <Description>If no URI scheme is in use, or if the URI scheme in use is not defined as either a provisional or permanent scheme, TSPX_URI_scheme shall contain Unicode code point U+0001, represented in UTF-8 as 1 (hexadecimal 0x01) in the first octet. See Core Spec Supplement (CSS) v6, Section 1.1.18 (Default: 000168747470733A2F2F7777772E626C7565746F6F74682E636F6D - https://www.bluetooth.com)</Description>
             <Type>OCTETSTRING</Type>
-            <Value>162F2F7777772E626C7565746F6F74682E636F6D</Value>
+            <Value>000168747470733A2F2F7777772E626C7565746F6F74682E636F6D</Value>
           </Row>
         </Rows>
       </PIXIT>
@@ -1954,7 +1954,7 @@
           <Row>
             <Name>TSPC_GATT_2_3</Name>
             <Description>Attribute Protocol Supported (L2CAP fixed EATT PSM supported) (C.3)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -2457,7 +2457,7 @@
           </Row>
           <Row>
             <Name>TSPX_selected_handle</Name>
-            <Description>Handle slected from the IUT database to be used for invalid transport test cases.</Description>
+            <Description>Handle selected from the IUT database to be used for invalid transport test cases.</Description>
             <Type>OCTETSTRING</Type>
             <Value>0012</Value>
           </Row>
@@ -2466,12 +2466,6 @@
             <Description>Whether to receive a message via Implicit Send when an action or attention is needed by test operator. (Default: TRUE)</Description>
             <Type>BOOLEAN</Type>
             <Value>TRUE</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_secure_simple_pairing_pass_key_confirmation</Name>
-            <Description>Whether manual confirmation on generated key is required during secure simple pairing. It should be set to FALSE for test cases that do not require authentication. (Default: FALSE)</Description>
-            <Type>BOOLEAN</Type>
-            <Value>FALSE</Value>
           </Row>
           <Row>
             <Name>TSPX_iut_use_dynamic_bd_addr</Name>
@@ -3124,7 +3118,7 @@
             <Value>FALSE</Value>
           </Row>
           <Row>
-            <Name>TSPX_le_psm</Name>
+            <Name>TSPX_spsm</Name>
             <Description>LE PSM to be used by IUT and TESTER. (Default: 0025)</Description>
             <Type>OCTETSTRING</Type>
             <Value>0025</Value>
