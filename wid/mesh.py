@@ -69,6 +69,22 @@ def mesh_wid_hdl(wid, description, test_case_name):
     except AttributeError as e:
         logging.exception(e)
 
+def iut_provision():
+    stack = get_stack()
+
+    if not stack.mesh.is_initialized:
+        btp.mesh_config_prov()
+        btp.mesh_init()
+        # Wait a few seconds so that Mesh is initialized and everything is loaded from flash
+        time.sleep(5)
+
+    if stack.mesh.is_provisioned.data:
+        btp.mesh_reset()
+        time.sleep(5)
+
+    btp.mesh_prov_enable()
+
+    return True
 
 # wid handlers section begin
 def hdl_wid_6(desc):
@@ -122,18 +138,7 @@ def hdl_wid_12(desc):
                  Remove the remote side's security information if any.
     :return:
     """
-    stack = get_stack()
-
-    if not stack.mesh.is_initialized:
-        btp.mesh_config_prov()
-        btp.mesh_init()
-    else:
-        if stack.mesh.is_provisioned.data:
-            return True
-        else:
-            return True
-
-    return True
+    return iut_provision()
 
 
 def hdl_wid_13(desc):
@@ -144,18 +149,7 @@ def hdl_wid_13(desc):
                  start provisioning from
     :return:
     """
-    stack = get_stack()
-
-    if not stack.mesh.is_initialized:
-        btp.mesh_config_prov()
-        btp.mesh_init()
-    else:
-        if stack.mesh.is_provisioned.data:
-            return True
-        else:
-            return True
-
-    return True
+    return iut_provision()
 
 
 def hdl_wid_15(desc):
@@ -573,15 +567,7 @@ def hdl_wid_46(desc):
                  UUID set to TSPX_device_uuid.
     :return:
     """
-    stack = get_stack()
-
-    if stack.mesh.is_provisioned.data:
-        btp.mesh_reset()
-
-    if not stack.mesh.is_initialized:
-        btp.mesh_config_prov()
-        btp.mesh_init()
-    return True
+    return iut_provision()
 
 
 def hdl_wid_51(desc):
@@ -621,14 +607,7 @@ def hdl_wid_81(desc):
                  Mesh Provisioning Service.
     :return:
     """
-    stack = get_stack()
-    if stack.mesh.is_provisioned.data:
-        btp.mesh_reset()
-
-    if not stack.mesh.is_initialized:
-        btp.mesh_config_prov()
-        btp.mesh_init()
-    return True
+    return iut_provision()
 
 
 def hdl_wid_85(desc):
@@ -777,14 +756,7 @@ def hdl_wid_210(desc):
                  Click OK when ready.
     :return:
     """
-    stack = get_stack()
-
-    if stack.mesh.is_provisioned.data is False:
-        btp.mesh_config_prov()
-        btp.mesh_init()
-        return True
-    else:
-        return False
+    return iut_provision()
 
 
 def hdl_wid_216(desc):
