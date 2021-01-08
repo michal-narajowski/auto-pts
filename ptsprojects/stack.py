@@ -308,6 +308,8 @@ class Mesh:
         # net_recv_ev_data (ttl, ctl, src, dst, payload)
         self.net_recv_ev_data = Property(None)
         self.incomp_timer_exp = Property(False)
+        self.friendship = Property(False)
+        self.lpn = Property(False)
 
         # LPN
         self.lpn_subscriptions = []
@@ -335,6 +337,39 @@ class Mesh:
 
         return False
 
+    def wait_for_lpn_established(self, timeout):
+        if self.lpn.data:
+            return True
+
+        flag = Event()
+        flag.set()
+
+        t = Timer(timeout, timeout_cb, [flag])
+        t.start()
+
+        while flag.is_set():
+            if self.lpn.data:
+                t.cancel()
+                return True
+
+        return False
+
+    def wait_for_lpn_terminated(self, timeout):
+        if not self.lpn.data:
+            return True
+
+        flag = Event()
+        flag.set()
+
+        t = Timer(timeout, timeout_cb, [flag])
+        t.start()
+
+        while flag.is_set():
+            if not self.lpn.data:
+                t.cancel()
+                return True
+
+        return False
 
 class L2capChan:
     def __init__(self, chan_id, psm, peer_mtu, peer_mps, our_mtu, our_mps,
