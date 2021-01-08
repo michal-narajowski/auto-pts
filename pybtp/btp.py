@@ -3568,6 +3568,38 @@ def mesh_incomp_timer_exp_ev(mesh, data, data_len):
     stack.mesh.incomp_timer_exp.data = True
 
 
+def mesh_frnd_established_ev(mesh, data, data_len):
+    logging.debug("%s", mesh_frnd_established_ev.__name__)
+
+    stack = get_stack()
+
+    stack.mesh.friendship.data = True
+
+
+def mesh_frnd_terminated_ev(mesh, data, data_len):
+    logging.debug("%s", mesh_frnd_terminated_ev.__name__)
+
+    stack = get_stack()
+
+    stack.mesh.friendship.data = False
+
+
+def mesh_lpn_established_ev(mesh, data, data_len):
+    logging.debug("%s", mesh_lpn_established_ev.__name__)
+
+    stack = get_stack()
+
+    stack.mesh.lpn.data = True
+
+
+def mesh_lpn_terminated_ev(mesh, data, data_len):
+    logging.debug("%s", mesh_lpn_terminated_ev.__name__)
+
+    stack = get_stack()
+
+    stack.mesh.lpn.data = False
+
+
 MESH_EV = {
     defs.MESH_EV_OUT_NUMBER_ACTION: mesh_out_number_action_ev,
     defs.MESH_EV_OUT_STRING_ACTION: mesh_out_string_action_ev,
@@ -3578,6 +3610,10 @@ MESH_EV = {
     defs.MESH_EV_NET_RECV: mesh_net_rcv_ev,
     defs.MESH_EV_INVALID_BEARER: mesh_invalid_bearer_ev,
     defs.MESH_EV_INCOMP_TIMER_EXP: mesh_incomp_timer_exp_ev,
+    defs.MESH_EV_FRND_ESTABLISHED: mesh_frnd_established_ev,
+    defs.MESH_EV_FRND_TERMINATED: mesh_frnd_terminated_ev,
+    defs.MESH_EV_LPN_ESTABLISHED: mesh_lpn_established_ev,
+    defs.MESH_EV_LPN_TERMINATED: mesh_lpn_terminated_ev,
 }
 
 
